@@ -337,24 +337,26 @@
 
                 <div class="form-group">
                     <label>📷 你的照片</label>
-                    <div class="photo-upload" id="photoUpload" onclick="document.getElementById('photoInput').click()">
-                        <input type="file" id="photoInput" accept="image/*" capture="user" />
+                    <div class="photo-upload" id="photoUpload" onclick="selectPhoto()">
                         <div class="placeholder" id="photoPlaceholder">
                             <div class="icon">📸</div>
-                            <div class="text">點擊上傳照片</div>
+                            <div class="text">點擊選擇照片</div>
                         </div>
                         <img id="photoPreview" style="display: none" />
                     </div>
                     <div class="photo-options">
-                        <button
-                            type="button"
-                            class="photo-option-btn"
-                            onclick="document.getElementById('photoInput').click()"
-                        >
-                            📁 選擇照片
-                        </button>
+                        <button type="button" class="photo-option-btn" onclick="selectPhoto()">🖼️ 選擇照片</button>
                         <button type="button" class="photo-option-btn" onclick="takePhoto()">📷 拍照</button>
                     </div>
+                    <!-- 兩個獨立的 input，一個選照片、一個拍照 -->
+                    <input type="file" id="photoInputGallery" accept="image/*" style="display: none" />
+                    <input
+                        type="file"
+                        id="photoInputCamera"
+                        accept="image/*"
+                        capture="environment"
+                        style="display: none"
+                    />
                 </div>
 
                 <button class="submit-btn" id="submitBtn" onclick="submitForm()">🎅 加入抽獎</button>
@@ -409,18 +411,35 @@
             let photoDataUrl = null
 
             // ==================== 照片處理 ====================
-            document.getElementById('photoInput').addEventListener('change', function (e) {
+
+            // 選擇照片（從相簿）
+            function selectPhoto() {
+                const input = document.getElementById('photoInputGallery')
+                input.value = '' // 清空以便重新選擇
+                input.click()
+            }
+
+            // 拍照（開啟相機）
+            function takePhoto() {
+                const input = document.getElementById('photoInputCamera')
+                input.value = '' // 清空以便重新拍攝
+                input.click()
+            }
+
+            // 監聽兩個 input 的變化
+            document.getElementById('photoInputGallery').addEventListener('change', function (e) {
                 const file = e.target.files[0]
                 if (file) {
                     processPhoto(file)
                 }
             })
 
-            function takePhoto() {
-                const input = document.getElementById('photoInput')
-                input.setAttribute('capture', 'user')
-                input.click()
-            }
+            document.getElementById('photoInputCamera').addEventListener('change', function (e) {
+                const file = e.target.files[0]
+                if (file) {
+                    processPhoto(file)
+                }
+            })
 
             function processPhoto(file) {
                 // 檢查檔案大小 (限制 5MB)
