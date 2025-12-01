@@ -621,10 +621,14 @@
                 padding: 10px;
             }
 
-            .qr-code img,
+            .qr-code img {
+                max-width: 100%;
+                max-height: 100%;
+            }
+
             .qr-code canvas {
-                width: 100%;
-                height: 100%;
+                max-width: 100%;
+                max-height: 100%;
             }
 
             .qr-section p {
@@ -803,20 +807,19 @@
         <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
         <!-- QR Code 生成器 -->
-        <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
         <script>
             // ==================== Firebase 設定 ====================
             // 請將下方的設定替換成你自己的 Firebase 專案設定
             const firebaseConfig = {
-                apiKey: 'AIzaSyCao44vYtNN_LJDFWe1FfssDT9H2e2DZEs',
-                authDomain: 'gift-exchange-ff3d4.firebaseapp.com',
-                databaseURL: 'https://gift-exchange-ff3d4-default-rtdb.asia-southeast1.firebasedatabase.app',
-                projectId: 'gift-exchange-ff3d4',
-                storageBucket: 'gift-exchange-ff3d4.firebasestorage.app',
-                messagingSenderId: '435810354824',
-                appId: '1:435810354824:web:879aded64a1a01a733813d',
-                measurementId: 'G-V6CW8BFWV6',
+                apiKey: 'YOUR_API_KEY',
+                authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',
+                databaseURL: 'https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com',
+                projectId: 'YOUR_PROJECT_ID',
+                storageBucket: 'YOUR_PROJECT_ID.appspot.com',
+                messagingSenderId: 'YOUR_SENDER_ID',
+                appId: 'YOUR_APP_ID',
             }
 
             // 初始化 Firebase
@@ -858,28 +861,26 @@
             function generateQRCode() {
                 const currentUrl = window.location.href
                 const joinUrl = currentUrl.replace(/index\.html.*$/, 'join.html').replace(/\/$/, '/join.html')
-                console.log('joinUrl', joinUrl)
+
                 document.getElementById('joinUrl').textContent =
                     joinUrl.length > 30 ? joinUrl.substring(0, 30) + '...' : joinUrl
 
                 const qrContainer = document.getElementById('qrCode')
-                QRCode.toCanvas(
-                    document.createElement('canvas'),
-                    joinUrl,
-                    {
+                qrContainer.innerHTML = '' // 清空容器
+
+                try {
+                    new QRCode(qrContainer, {
+                        text: joinUrl,
                         width: 130,
-                        margin: 1,
-                        color: { dark: '#165b33', light: '#ffffff' },
-                    },
-                    function (error, canvas) {
-                        if (!error) {
-                            qrContainer.innerHTML = ''
-                            qrContainer.appendChild(canvas)
-                        } else {
-                            qrContainer.innerHTML = '<span style="color: #666; font-size: 10px;">QR 生成失敗</span>'
-                        }
-                    }
-                )
+                        height: 130,
+                        colorDark: '#165b33',
+                        colorLight: '#ffffff',
+                        correctLevel: QRCode.CorrectLevel.M,
+                    })
+                } catch (error) {
+                    console.error('QR Code 生成失敗:', error)
+                    qrContainer.innerHTML = '<span style="color: #666; font-size: 10px;">QR 生成失敗</span>'
+                }
             }
 
             // ==================== Firebase 監聽 ====================
@@ -1223,8 +1224,12 @@
             // ==================== 綁定事件 ====================
             document.getElementById('lotteryBtn').addEventListener('click', startLottery)
 
-            // 初始化
-            init()
+            // 初始化 - 等待頁面完全載入
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init)
+            } else {
+                init()
+            }
         </script>
     </body>
 </html>
