@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>🎄 聖誕交換禮物抽獎 🎁</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            :root {
+                --christmas-red: #c41e3a;
+                --christmas-green: #165b33;
+                --christmas-gold: #f8b229;
+                --christmas-white: #f5f5f5;
+                --christmas-black: #1a1a1a;
+                --dark-green: #0d3320;
+            }
+
+            body {
+                font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+                background: linear-gradient(135deg, var(--dark-green) 0%, var(--christmas-black) 100%);
+                min-height: 100vh;
+                overflow: hidden;
+            }
+
+            /* 主容器 - 1920x1080 */
+            .main-container {
+                width: 1920px;
+                height: 1080px;
+                margin: 0 auto;
+                position: relative;
+                overflow: hidden;
+            }
+
+            /* 雪花背景 */
+            .snowflakes {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: 1;
+            }
+
+            .snowflake {
+                position: absolute;
+                color: rgba(255, 255, 255, 0.6);
+                font-size: 1.5em;
+                animation: fall linear infinite;
+            }
+
+            @keyframes fall {
+                0% {
+                    transform: translateY(-10%) rotate(0deg);
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateY(110vh) rotate(360deg);
+                    opacity: 0.3;
+                }
+            }
+
+            /* 標題區 */
+            .header {
+                text-align: center;
+                padding: 30px 0;
+                position: relative;
+                z-index: 10;
+            }
+
+            .header h1 {
+                font-size: 72px;
+                color: var(--christmas-white);
+                text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5), 0 0 30px var(--christmas-gold);
+                letter-spacing: 8px;
+            }
+
+            .header .subtitle {
+                font-size: 28px;
+                color: var(--christmas-gold);
+                margin-top: 10px;
+            }
+
+            /* 主要內容區 */
+            .content {
+                display: flex;
+                height: calc(100% - 180px);
+                padding: 0 40px;
+                gap: 40px;
+                position: relative;
+                z-index: 10;
+            }
+
+            /* 球池區域 */
+            .pool-section {
+                flex: 1;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 30px;
+                border: 3px solid var(--christmas-green);
+                padding: 30px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .pool-title {
+                font-size: 32px;
+                color: var(--christmas-white);
+                text-align: center;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 15px;
+            }
+
+            .pool-count {
+                background: var(--christmas-red);
+                padding: 5px 20px;
+                border-radius: 20px;
+                font-size: 24px;
+            }
+
+            .ball-pool {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+                justify-content: center;
+                align-content: flex-start;
+                height: calc(100% - 70px);
+                overflow-y: auto;
+                padding: 10px;
+            }
+
+            .ball {
+                width: 120px;
+                height: 150px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                animation: float 3s ease-in-out infinite;
+                transition: all 0.3s ease;
+            }
+
+            .ball:nth-child(odd) {
+                animation-delay: -1.5s;
+            }
+
+            .ball.new-join {
+                animation: popIn 0.5s ease-out;
+            }
+
+            @keyframes popIn {
+                0% {
+                    transform: scale(0);
+                    opacity: 0;
+                }
+                50% {
+                    transform: scale(1.2);
+                }
+                100% {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes float {
+                0%,
+                100% {
+                    transform: translateY(0);
+                }
+                50% {
+                    transform: translateY(-10px);
+                }
+            }
+
+            .ball-avatar {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                border: 4px solid var(--christmas-gold);
+                overflow: hidden;
+                background: var(--christmas-green);
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+            }
+
+            .ball-avatar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .ball-avatar .placeholder {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 40px;
+                color: var(--christmas-white);
+                background: linear-gradient(135deg, var(--christmas-red), var(--christmas-green));
+            }
+
+            .ball-name {
+                margin-top: 10px;
+                font-size: 18px;
+                color: var(--christmas-white);
+                text-align: center;
+                max-width: 120px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            /* 抽獎區域 */
+            .lottery-section {
+                width: 600px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 30px;
+            }
+
+            /* 當前抽獎者 */
+            .current-drawer {
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 20px;
+                padding: 25px;
+                text-align: center;
+                width: 100%;
+                border: 2px solid var(--christmas-gold);
+            }
+
+            .current-drawer-label {
+                font-size: 24px;
+                color: var(--christmas-gold);
+                margin-bottom: 15px;
+            }
+
+            .current-drawer-info {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 20px;
+            }
+
+            .current-drawer-avatar {
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                border: 3px solid var(--christmas-white);
+                overflow: hidden;
+                background: var(--christmas-green);
+            }
+
+            .current-drawer-avatar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .current-drawer-name {
+                font-size: 36px;
+                color: var(--christmas-white);
+            }
+
+            /* 抽獎動畫區 */
+            .lottery-display {
+                width: 100%;
+                height: 350px;
+                background: radial-gradient(ellipse at center, rgba(196, 30, 58, 0.3) 0%, transparent 70%);
+                border-radius: 30px;
+                border: 3px solid var(--christmas-red);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .lottery-display::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: conic-gradient(from 0deg, transparent, var(--christmas-gold), transparent);
+                animation: rotate 4s linear infinite;
+                opacity: 0.1;
+            }
+
+            @keyframes rotate {
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+
+            .lottery-avatar {
+                width: 180px;
+                height: 180px;
+                border-radius: 50%;
+                border: 6px solid var(--christmas-gold);
+                overflow: hidden;
+                background: var(--christmas-green);
+                box-shadow: 0 0 50px rgba(248, 178, 41, 0.5);
+                position: relative;
+                z-index: 2;
+            }
+
+            .lottery-avatar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .lottery-avatar .placeholder {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 60px;
+                color: var(--christmas-white);
+            }
+
+            .lottery-name {
+                font-size: 48px;
+                color: var(--christmas-white);
+                margin-top: 20px;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+                position: relative;
+                z-index: 2;
+            }
+
+            .lottery-status {
+                font-size: 28px;
+                color: var(--christmas-gold);
+                position: relative;
+                z-index: 2;
+            }
+
+            /* 抽獎按鈕 */
+            .lottery-btn {
+                width: 280px;
+                height: 80px;
+                font-size: 32px;
+                font-weight: bold;
+                color: var(--christmas-white);
+                background: linear-gradient(135deg, var(--christmas-red) 0%, #8b0000 100%);
+                border: none;
+                border-radius: 40px;
+                cursor: pointer;
+                box-shadow: 0 8px 25px rgba(196, 30, 58, 0.5);
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .lottery-btn:hover:not(:disabled) {
+                transform: translateY(-3px);
+                box-shadow: 0 12px 35px rgba(196, 30, 58, 0.7);
+            }
+
+            .lottery-btn:active:not(:disabled) {
+                transform: translateY(0);
+            }
+
+            .lottery-btn:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+
+            .lottery-btn::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                transform: rotate(45deg);
+                animation: shine 3s infinite;
+            }
+
+            @keyframes shine {
+                0% {
+                    left: -50%;
+                }
+                100% {
+                    left: 150%;
+                }
+            }
+
+            /* 抽獎中動畫 */
+            .rolling .lottery-avatar {
+                animation: shake 0.1s infinite;
+            }
+
+            .rolling .lottery-name {
+                animation: blink 0.15s infinite;
+            }
+
+            @keyframes shake {
+                0%,
+                100% {
+                    transform: translateX(0);
+                }
+                25% {
+                    transform: translateX(-5px);
+                }
+                75% {
+                    transform: translateX(5px);
+                }
+            }
+
+            @keyframes blink {
+                0%,
+                100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.5;
+                }
+            }
+
+            /* 中獎效果 */
+            .winner .lottery-display {
+                animation: celebrate 0.5s ease-out;
+                border-color: var(--christmas-gold);
+                box-shadow: 0 0 60px rgba(248, 178, 41, 0.6);
+            }
+
+            @keyframes celebrate {
+                0%,
+                100% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.02);
+                }
+            }
+
+            .winner .lottery-avatar {
+                animation: bounce 0.6s ease;
+            }
+
+            @keyframes bounce {
+                0%,
+                100% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.1);
+                }
+            }
+
+            /* 控制面板 */
+            .control-panel {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(0, 0, 0, 0.9);
+                padding: 20px;
+                border-radius: 15px;
+                z-index: 1000;
+                border: 2px solid var(--christmas-green);
+                max-width: 280px;
+            }
+
+            .control-panel h3 {
+                color: var(--christmas-gold);
+                margin-bottom: 15px;
+                font-size: 18px;
+            }
+
+            .control-panel .status {
+                color: var(--christmas-white);
+                font-size: 14px;
+                margin-bottom: 15px;
+                padding: 10px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 8px;
+            }
+
+            .control-panel .status.connected {
+                border-left: 3px solid #4caf50;
+            }
+
+            .control-panel .status.disconnected {
+                border-left: 3px solid var(--christmas-red);
+            }
+
+            .control-panel button {
+                display: block;
+                width: 100%;
+                padding: 10px 20px;
+                margin: 8px 0;
+                background: var(--christmas-green);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: background 0.3s;
+            }
+
+            .control-panel button:hover {
+                background: #1e7a46;
+            }
+
+            .control-panel .reset-btn {
+                background: var(--christmas-red);
+            }
+
+            .control-panel .reset-btn:hover {
+                background: #a01830;
+            }
+
+            .participant-select {
+                width: 100%;
+                padding: 10px;
+                margin: 10px 0;
+                border-radius: 8px;
+                border: none;
+                font-size: 14px;
+            }
+
+            /* 完成畫面 */
+            .complete-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.9);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                z-index: 100;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.5s ease;
+            }
+
+            .complete-overlay.show {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .complete-overlay h2 {
+                font-size: 72px;
+                color: var(--christmas-gold);
+                text-shadow: 0 0 30px var(--christmas-gold);
+                margin-bottom: 30px;
+            }
+
+            .complete-overlay p {
+                font-size: 36px;
+                color: var(--christmas-white);
+            }
+
+            /* 倒數計時 */
+            .countdown {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 120px;
+                color: var(--christmas-gold);
+                text-shadow: 0 0 30px var(--christmas-gold);
+                z-index: 5;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+
+            .countdown.show {
+                opacity: 1;
+                animation: countPulse 1s ease-out;
+            }
+
+            @keyframes countPulse {
+                0% {
+                    transform: translate(-50%, -50%) scale(1.5);
+                    opacity: 0;
+                }
+                50% {
+                    opacity: 1;
+                }
+                100% {
+                    transform: translate(-50%, -50%) scale(1);
+                    opacity: 1;
+                }
+            }
+
+            /* QR Code 顯示區 */
+            .qr-section {
+                position: absolute;
+                bottom: 30px;
+                left: 40px;
+                text-align: center;
+                z-index: 10;
+                background: rgba(0, 0, 0, 0.6);
+                padding: 20px;
+                border-radius: 15px;
+            }
+
+            .qr-code {
+                width: 150px;
+                height: 150px;
+                background: white;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 10px;
+                padding: 10px;
+            }
+
+            .qr-code img,
+            .qr-code canvas {
+                width: 100%;
+                height: 100%;
+            }
+
+            .qr-section p {
+                color: var(--christmas-white);
+                font-size: 16px;
+            }
+
+            .qr-section .url {
+                color: var(--christmas-gold);
+                font-size: 12px;
+                margin-top: 5px;
+                word-break: break-all;
+                max-width: 150px;
+            }
+
+            /* 歷史記錄 */
+            .history-section {
+                position: absolute;
+                bottom: 20px;
+                right: 20px;
+                background: rgba(0, 0, 0, 0.6);
+                padding: 15px;
+                border-radius: 15px;
+                max-height: 200px;
+                overflow-y: auto;
+                z-index: 10;
+            }
+
+            .history-section h4 {
+                color: var(--christmas-gold);
+                margin-bottom: 10px;
+                font-size: 16px;
+            }
+
+            .history-item {
+                color: var(--christmas-white);
+                font-size: 14px;
+                margin: 5px 0;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .history-item .arrow {
+                color: var(--christmas-red);
+            }
+
+            /* 等待加入畫面 */
+            .waiting-message {
+                text-align: center;
+                padding: 100px;
+            }
+
+            .waiting-message h2 {
+                font-size: 48px;
+                color: var(--christmas-white);
+                margin-bottom: 20px;
+            }
+
+            .waiting-message p {
+                font-size: 28px;
+                color: var(--christmas-gold);
+            }
+
+            /* 滾動條樣式 */
+            ::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 4px;
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: var(--christmas-green);
+                border-radius: 4px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="main-container" id="app">
+            <!-- 雪花背景 -->
+            <div class="snowflakes" id="snowflakes"></div>
+
+            <!-- 標題 -->
+            <header class="header">
+                <h1>🎄 聖誕交換禮物 🎁</h1>
+                <p class="subtitle">Merry Christmas & Happy New Year</p>
+            </header>
+
+            <!-- 主要內容 -->
+            <div class="content">
+                <!-- 球池區域 -->
+                <div class="pool-section">
+                    <div class="pool-title">
+                        🎱 抽獎球池
+                        <span class="pool-count">剩餘 <span id="poolCount">0</span> 人</span>
+                    </div>
+                    <div class="ball-pool" id="ballPool">
+                        <div class="waiting-message">
+                            <h2>等待參加者加入...</h2>
+                            <p>請掃描左下角 QR Code 加入抽獎</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 抽獎區域 -->
+                <div class="lottery-section">
+                    <!-- 當前抽獎者 -->
+                    <div class="current-drawer" id="currentDrawer">
+                        <div class="current-drawer-label">🎅 目前抽獎者</div>
+                        <div class="current-drawer-info">
+                            <div class="current-drawer-avatar" id="drawerAvatar">
+                                <div class="placeholder">?</div>
+                            </div>
+                            <div class="current-drawer-name" id="drawerName">等待主持人指定</div>
+                        </div>
+                    </div>
+
+                    <!-- 抽獎展示區 -->
+                    <div class="lottery-display" id="lotteryDisplay">
+                        <div class="lottery-avatar" id="lotteryAvatar">
+                            <div class="placeholder">🎁</div>
+                        </div>
+                        <div class="lottery-name" id="lotteryName">準備抽獎</div>
+                        <div class="lottery-status" id="lotteryStatus"></div>
+                        <div class="countdown" id="countdown"></div>
+                    </div>
+
+                    <!-- 抽獎按鈕 -->
+                    <button class="lottery-btn" id="lotteryBtn" disabled>🎰 開始抽獎</button>
+                </div>
+            </div>
+
+            <!-- QR Code 區域 -->
+            <div class="qr-section" id="qrSection">
+                <div class="qr-code" id="qrCode">
+                    <span style="color: #666; font-size: 12px">載入中...</span>
+                </div>
+                <p>📱 掃描加入抽獎</p>
+                <p class="url" id="joinUrl"></p>
+            </div>
+
+            <!-- 歷史記錄 -->
+            <div class="history-section" id="historySection" style="display: none">
+                <h4>📜 抽獎記錄</h4>
+                <div id="historyList"></div>
+            </div>
+
+            <!-- 完成畫面 -->
+            <div class="complete-overlay" id="completeOverlay">
+                <h2>🎉 抽獎完成！🎉</h2>
+                <p>祝大家聖誕快樂！</p>
+            </div>
+        </div>
+
+        <!-- 控制面板 -->
+        <div class="control-panel">
+            <h3>🛠️ 主持人控制台</h3>
+            <div class="status" id="firebaseStatus">⏳ 連線中...</div>
+
+            <label style="color: white; font-size: 14px">指定第一位抽獎者：</label>
+            <select class="participant-select" id="firstDrawerSelect">
+                <option value="">-- 請選擇 --</option>
+            </select>
+            <button onclick="setFirstDrawer()">確認指定</button>
+
+            <hr style="border-color: rgba(255, 255, 255, 0.2); margin: 15px 0" />
+
+            <button class="reset-btn" onclick="resetGame()">重置遊戲</button>
+        </div>
+
+        <!-- Firebase SDK -->
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+        <!-- QR Code 生成器 -->
+        <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+
+        <script>
+            // ==================== Firebase 設定 ====================
+            // 請將下方的設定替換成你自己的 Firebase 專案設定
+            const firebaseConfig = {
+                apiKey: 'AIzaSyCao44vYtNN_LJDFWe1FfssDT9H2e2DZEs',
+                authDomain: 'gift-exchange-ff3d4.firebaseapp.com',
+                databaseURL: 'https://gift-exchange-ff3d4-default-rtdb.asia-southeast1.firebasedatabase.app',
+                projectId: 'gift-exchange-ff3d4',
+                storageBucket: 'gift-exchange-ff3d4.firebasestorage.app',
+                messagingSenderId: '435810354824',
+                appId: '1:435810354824:web:879aded64a1a01a733813d',
+                measurementId: 'G-V6CW8BFWV6',
+            }
+
+            // 初始化 Firebase
+            firebase.initializeApp(firebaseConfig)
+            const database = firebase.database()
+
+            // ==================== 遊戲狀態 ====================
+            let gameState = {
+                participants: [],
+                pool: [],
+                currentDrawer: null,
+                history: [],
+                drawnIds: [],
+                isRolling: false,
+                isComplete: false,
+            }
+
+            // ==================== 初始化 ====================
+            function init() {
+                createSnowflakes()
+                generateQRCode()
+                listenToParticipants()
+                listenToGameState()
+
+                // 監聽 Firebase 連線狀態
+                database.ref('.info/connected').on('value', (snap) => {
+                    const statusEl = document.getElementById('firebaseStatus')
+                    if (snap.val() === true) {
+                        statusEl.textContent = '✅ Firebase 已連線'
+                        statusEl.className = 'status connected'
+                    } else {
+                        statusEl.textContent = '❌ Firebase 已斷線'
+                        statusEl.className = 'status disconnected'
+                    }
+                })
+            }
+
+            // ==================== QR Code ====================
+            function generateQRCode() {
+                const currentUrl = window.location.href
+                const joinUrl = currentUrl.replace(/index\.html.*$/, 'join.html').replace(/\/$/, '/join.html')
+
+                document.getElementById('joinUrl').textContent =
+                    joinUrl.length > 30 ? joinUrl.substring(0, 30) + '...' : joinUrl
+
+                const qrContainer = document.getElementById('qrCode')
+                QRCode.toCanvas(
+                    document.createElement('canvas'),
+                    joinUrl,
+                    {
+                        width: 130,
+                        margin: 1,
+                        color: { dark: '#165b33', light: '#ffffff' },
+                    },
+                    function (error, canvas) {
+                        if (!error) {
+                            qrContainer.innerHTML = ''
+                            qrContainer.appendChild(canvas)
+                        } else {
+                            qrContainer.innerHTML = '<span style="color: #666; font-size: 10px;">QR 生成失敗</span>'
+                        }
+                    }
+                )
+            }
+
+            // ==================== Firebase 監聽 ====================
+            function listenToParticipants() {
+                database.ref('participants').on('value', (snapshot) => {
+                    const data = snapshot.val()
+                    if (data) {
+                        const newParticipants = Object.values(data)
+                        const existingIds = gameState.participants.map((p) => p.id)
+                        const newJoins = newParticipants.filter((p) => !existingIds.includes(p.id))
+
+                        gameState.participants = newParticipants
+                        updatePoolFromParticipants()
+                        renderPool(newJoins.map((p) => p.id))
+                        updatePoolCount()
+                        updateFirstDrawerSelect()
+                    } else {
+                        gameState.participants = []
+                        gameState.pool = []
+                        renderPool([])
+                        updatePoolCount()
+                        updateFirstDrawerSelect()
+                    }
+                })
+            }
+
+            function listenToGameState() {
+                database.ref('gameState').on('value', (snapshot) => {
+                    const data = snapshot.val()
+                    if (data) {
+                        if (data.currentDrawer) {
+                            gameState.currentDrawer = data.currentDrawer
+                            updateCurrentDrawer()
+                            document.getElementById('lotteryBtn').disabled = false
+                        }
+                        if (data.drawnIds) {
+                            gameState.drawnIds = data.drawnIds
+                            updatePoolFromParticipants()
+                            renderPool([])
+                            updatePoolCount()
+                        }
+                        if (data.history) {
+                            gameState.history = data.history
+                            updateHistory()
+                        }
+                    }
+                })
+            }
+
+            function updatePoolFromParticipants() {
+                const drawnIds = gameState.drawnIds || []
+                gameState.pool = gameState.participants.filter((p) => !drawnIds.includes(p.id))
+            }
+
+            // ==================== 渲染球池 ====================
+            function renderPool(newJoinIds = []) {
+                const poolEl = document.getElementById('ballPool')
+
+                if (gameState.pool.length === 0 && gameState.participants.length === 0) {
+                    poolEl.innerHTML = `
+                    <div class="waiting-message">
+                        <h2>等待參加者加入...</h2>
+                        <p>請掃描左下角 QR Code 加入抽獎</p>
+                    </div>
+                `
+                    return
+                }
+
+                if (gameState.pool.length === 0) {
+                    poolEl.innerHTML = `
+                    <div class="waiting-message">
+                        <h2>球池已清空</h2>
+                        <p>抽獎完成！</p>
+                    </div>
+                `
+                    return
+                }
+
+                poolEl.innerHTML = gameState.pool
+                    .map(
+                        (p) => `
+                <div class="ball ${newJoinIds.includes(p.id) ? 'new-join' : ''}" data-id="${p.id}">
+                    <div class="ball-avatar">
+                        <img src="${p.avatar}" alt="${
+                            p.name
+                        }" onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'>${p.name.charAt(
+                            0
+                        )}</div>'">
+                    </div>
+                    <div class="ball-name">${p.name}</div>
+                </div>
+            `
+                    )
+                    .join('')
+            }
+
+            function updatePoolCount() {
+                document.getElementById('poolCount').textContent = gameState.pool.length
+            }
+
+            function updateFirstDrawerSelect() {
+                const select = document.getElementById('firstDrawerSelect')
+                const currentValue = select.value
+
+                select.innerHTML = '<option value="">-- 請選擇 --</option>'
+                gameState.participants.forEach((p) => {
+                    const option = document.createElement('option')
+                    option.value = p.id
+                    option.textContent = p.name
+                    select.appendChild(option)
+                })
+
+                select.value = currentValue
+            }
+
+            // ==================== 指定第一位抽獎者 ====================
+            function setFirstDrawer() {
+                const select = document.getElementById('firstDrawerSelect')
+                const selectedId = select.value
+
+                if (!selectedId) {
+                    alert('請選擇一位參加者！')
+                    return
+                }
+
+                const firstDrawer = gameState.participants.find((p) => p.id === selectedId)
+                if (!firstDrawer) return
+
+                database.ref('gameState').update({
+                    currentDrawer: firstDrawer,
+                    drawnIds: [firstDrawer.id],
+                })
+
+                gameState.currentDrawer = firstDrawer
+                gameState.drawnIds = [firstDrawer.id]
+
+                updateCurrentDrawer()
+                updatePoolFromParticipants()
+                renderPool([])
+                updatePoolCount()
+
+                document.getElementById('lotteryBtn').disabled = false
+            }
+
+            function updateCurrentDrawer() {
+                const drawer = gameState.currentDrawer
+                const avatarEl = document.getElementById('drawerAvatar')
+                const nameEl = document.getElementById('drawerName')
+
+                if (drawer) {
+                    avatarEl.innerHTML = `<img src="${drawer.avatar}" alt="${
+                        drawer.name
+                    }" onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'>${drawer.name.charAt(
+                        0
+                    )}</div>'">`
+                    nameEl.textContent = drawer.name
+                } else {
+                    avatarEl.innerHTML = '<div class="placeholder">?</div>'
+                    nameEl.textContent = '等待主持人指定'
+                }
+            }
+
+            // ==================== 抽獎動畫 ====================
+            async function startLottery() {
+                if (gameState.isRolling || gameState.pool.length === 0) return
+
+                gameState.isRolling = true
+                const btn = document.getElementById('lotteryBtn')
+                btn.disabled = true
+                btn.textContent = '🎰 抽獎中...'
+
+                const display = document.getElementById('lotteryDisplay')
+                const avatarEl = document.getElementById('lotteryAvatar')
+                const nameEl = document.getElementById('lotteryName')
+                const statusEl = document.getElementById('lotteryStatus')
+                const countdownEl = document.getElementById('countdown')
+
+                display.classList.add('rolling')
+                display.classList.remove('winner')
+                statusEl.textContent = ''
+
+                const winnerIndex = Math.floor(Math.random() * gameState.pool.length)
+                const winner = gameState.pool[winnerIndex]
+
+                const duration = 5000
+                const startTime = Date.now()
+                let lastCountdown = 5
+
+                const animate = () => {
+                    const elapsed = Date.now() - startTime
+                    const remaining = Math.ceil((duration - elapsed) / 1000)
+
+                    if (remaining !== lastCountdown && remaining > 0) {
+                        lastCountdown = remaining
+                        countdownEl.textContent = remaining
+                        countdownEl.classList.remove('show')
+                        void countdownEl.offsetWidth
+                        countdownEl.classList.add('show')
+                    }
+
+                    if (elapsed < duration) {
+                        const randomPerson = gameState.pool[Math.floor(Math.random() * gameState.pool.length)]
+                        avatarEl.innerHTML = `<img src="${randomPerson.avatar}" alt="${randomPerson.name}">`
+                        nameEl.textContent = randomPerson.name
+
+                        const speed = Math.min(50 + (elapsed / duration) * 150, 200)
+                        setTimeout(animate, speed)
+                    } else {
+                        countdownEl.classList.remove('show')
+                        countdownEl.textContent = ''
+                        showWinner(winner)
+                    }
+                }
+
+                animate()
+            }
+
+            function showWinner(winner) {
+                const display = document.getElementById('lotteryDisplay')
+                const avatarEl = document.getElementById('lotteryAvatar')
+                const nameEl = document.getElementById('lotteryName')
+                const statusEl = document.getElementById('lotteryStatus')
+                const btn = document.getElementById('lotteryBtn')
+
+                display.classList.remove('rolling')
+                display.classList.add('winner')
+
+                avatarEl.innerHTML = `<img src="${winner.avatar}" alt="${winner.name}">`
+                nameEl.textContent = winner.name
+                statusEl.textContent = '🎊 恭喜中獎！🎊'
+
+                const newHistory = [
+                    ...(gameState.history || []),
+                    {
+                        drawer: gameState.currentDrawer,
+                        winner: winner,
+                    },
+                ]
+
+                const drawnIds = [...(gameState.drawnIds || []), winner.id]
+                database.ref('gameState').update({
+                    currentDrawer: winner,
+                    drawnIds: drawnIds,
+                    history: newHistory,
+                })
+
+                gameState.history = newHistory
+                gameState.currentDrawer = winner
+                gameState.drawnIds = drawnIds
+
+                updateHistory()
+                updateCurrentDrawer()
+                updatePoolFromParticipants()
+                renderPool([])
+                updatePoolCount()
+
+                gameState.isRolling = false
+
+                if (gameState.pool.length === 0) {
+                    setTimeout(() => {
+                        gameState.isComplete = true
+                        document.getElementById('completeOverlay').classList.add('show')
+                    }, 2000)
+                    btn.textContent = '🎉 抽獎完成'
+                    btn.disabled = true
+                } else {
+                    btn.textContent = '🎰 開始抽獎'
+                    btn.disabled = false
+                }
+            }
+
+            function updateHistory() {
+                const historySection = document.getElementById('historySection')
+                const historyList = document.getElementById('historyList')
+
+                if (gameState.history && gameState.history.length > 0) {
+                    historySection.style.display = 'block'
+                    historyList.innerHTML = gameState.history
+                        .map(
+                            (h, i) => `
+                    <div class="history-item">
+                        <span>${i + 1}.</span>
+                        <span>${h.drawer.name}</span>
+                        <span class="arrow">→</span>
+                        <span>${h.winner.name}</span>
+                    </div>
+                `
+                        )
+                        .join('')
+                }
+            }
+
+            // ==================== 重置遊戲 ====================
+            function resetGame() {
+                if (!confirm('確定要重置遊戲嗎？所有抽獎紀錄將被清除。')) return
+
+                database.ref('gameState').remove()
+
+                gameState = {
+                    participants: gameState.participants,
+                    pool: [...gameState.participants],
+                    currentDrawer: null,
+                    history: [],
+                    drawnIds: [],
+                    isRolling: false,
+                    isComplete: false,
+                }
+
+                document.getElementById('completeOverlay').classList.remove('show')
+                document.getElementById('historySection').style.display = 'none'
+                document.getElementById('historyList').innerHTML = ''
+                document.getElementById('lotteryBtn').disabled = true
+                document.getElementById('lotteryBtn').textContent = '🎰 開始抽獎'
+                document.getElementById('lotteryDisplay').classList.remove('rolling', 'winner')
+                document.getElementById('lotteryAvatar').innerHTML = '<div class="placeholder">🎁</div>'
+                document.getElementById('lotteryName').textContent = '準備抽獎'
+                document.getElementById('lotteryStatus').textContent = ''
+
+                updateCurrentDrawer()
+                renderPool([])
+                updatePoolCount()
+            }
+
+            // ==================== 雪花效果 ====================
+            function createSnowflakes() {
+                const container = document.getElementById('snowflakes')
+                const snowflakeChars = ['❄', '❅', '❆', '✻', '✼']
+
+                for (let i = 0; i < 50; i++) {
+                    const snowflake = document.createElement('div')
+                    snowflake.className = 'snowflake'
+                    snowflake.innerHTML = snowflakeChars[Math.floor(Math.random() * snowflakeChars.length)]
+                    snowflake.style.left = Math.random() * 100 + '%'
+                    snowflake.style.animationDuration = Math.random() * 10 + 10 + 's'
+                    snowflake.style.animationDelay = -(Math.random() * 20) + 's'
+                    snowflake.style.fontSize = Math.random() * 1.5 + 0.5 + 'em'
+                    container.appendChild(snowflake)
+                }
+            }
+
+            // ==================== 綁定事件 ====================
+            document.getElementById('lotteryBtn').addEventListener('click', startLottery)
+
+            // 初始化
+            init()
+        </script>
+    </body>
+</html>

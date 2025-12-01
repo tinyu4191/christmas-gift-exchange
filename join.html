@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <title>🎄 加入聖誕抽獎</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            :root {
+                --christmas-red: #c41e3a;
+                --christmas-green: #165b33;
+                --christmas-gold: #f8b229;
+                --christmas-white: #f5f5f5;
+                --christmas-black: #1a1a1a;
+                --dark-green: #0d3320;
+            }
+
+            body {
+                font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+                background: linear-gradient(135deg, var(--dark-green) 0%, var(--christmas-black) 100%);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 400px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 30px;
+                padding: 40px 30px;
+                border: 2px solid var(--christmas-green);
+                backdrop-filter: blur(10px);
+            }
+
+            .header {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+                color: var(--christmas-white);
+                margin-bottom: 10px;
+            }
+
+            .header p {
+                color: var(--christmas-gold);
+                font-size: 16px;
+            }
+
+            .form-group {
+                margin-bottom: 25px;
+            }
+
+            .form-group label {
+                display: block;
+                color: var(--christmas-white);
+                font-size: 16px;
+                margin-bottom: 10px;
+            }
+
+            .form-group input[type='text'] {
+                width: 100%;
+                padding: 15px 20px;
+                font-size: 18px;
+                border: 2px solid var(--christmas-green);
+                border-radius: 15px;
+                background: rgba(255, 255, 255, 0.9);
+                color: var(--christmas-black);
+                outline: none;
+                transition: border-color 0.3s;
+            }
+
+            .form-group input[type='text']:focus {
+                border-color: var(--christmas-gold);
+            }
+
+            /* 照片上傳區 */
+            .photo-upload {
+                width: 100%;
+                aspect-ratio: 1;
+                max-width: 200px;
+                margin: 0 auto;
+                border: 3px dashed var(--christmas-green);
+                border-radius: 50%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                overflow: hidden;
+                position: relative;
+                background: rgba(255, 255, 255, 0.1);
+                transition: all 0.3s;
+            }
+
+            .photo-upload:hover {
+                border-color: var(--christmas-gold);
+                background: rgba(255, 255, 255, 0.15);
+            }
+
+            .photo-upload.has-photo {
+                border-style: solid;
+                border-color: var(--christmas-gold);
+            }
+
+            .photo-upload input {
+                display: none;
+            }
+
+            .photo-upload .placeholder {
+                text-align: center;
+                color: var(--christmas-white);
+            }
+
+            .photo-upload .placeholder .icon {
+                font-size: 48px;
+                margin-bottom: 10px;
+            }
+
+            .photo-upload .placeholder .text {
+                font-size: 14px;
+            }
+
+            .photo-upload img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+            .photo-options {
+                display: flex;
+                gap: 10px;
+                margin-top: 15px;
+                justify-content: center;
+            }
+
+            .photo-option-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+                border: 2px solid var(--christmas-green);
+                border-radius: 20px;
+                background: transparent;
+                color: var(--christmas-white);
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .photo-option-btn:hover {
+                background: var(--christmas-green);
+            }
+
+            /* 提交按鈕 */
+            .submit-btn {
+                width: 100%;
+                padding: 18px;
+                font-size: 20px;
+                font-weight: bold;
+                color: var(--christmas-white);
+                background: linear-gradient(135deg, var(--christmas-red) 0%, #8b0000 100%);
+                border: none;
+                border-radius: 15px;
+                cursor: pointer;
+                box-shadow: 0 5px 20px rgba(196, 30, 58, 0.4);
+                transition: all 0.3s;
+                margin-top: 10px;
+            }
+
+            .submit-btn:hover:not(:disabled) {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(196, 30, 58, 0.6);
+            }
+
+            .submit-btn:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+
+            /* 成功畫面 */
+            .success-screen {
+                display: none;
+                text-align: center;
+                padding: 40px 20px;
+            }
+
+            .success-screen.show {
+                display: block;
+            }
+
+            .success-screen .icon {
+                font-size: 80px;
+                margin-bottom: 20px;
+            }
+
+            .success-screen h2 {
+                color: var(--christmas-white);
+                font-size: 28px;
+                margin-bottom: 15px;
+            }
+
+            .success-screen p {
+                color: var(--christmas-gold);
+                font-size: 18px;
+                line-height: 1.6;
+            }
+
+            .success-screen .user-preview {
+                margin-top: 30px;
+                padding: 20px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 20px;
+            }
+
+            .success-screen .user-avatar {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                border: 3px solid var(--christmas-gold);
+                margin: 0 auto 15px;
+                overflow: hidden;
+            }
+
+            .success-screen .user-avatar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .success-screen .user-name {
+                color: var(--christmas-white);
+                font-size: 24px;
+            }
+
+            .form-screen {
+                display: block;
+            }
+
+            .form-screen.hide {
+                display: none;
+            }
+
+            /* 載入中 */
+            .loading {
+                display: none;
+                text-align: center;
+                padding: 20px;
+            }
+
+            .loading.show {
+                display: block;
+            }
+
+            .spinner {
+                width: 50px;
+                height: 50px;
+                border: 4px solid rgba(255, 255, 255, 0.2);
+                border-top-color: var(--christmas-gold);
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 15px;
+            }
+
+            @keyframes spin {
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+
+            .loading p {
+                color: var(--christmas-white);
+                font-size: 16px;
+            }
+
+            /* 錯誤訊息 */
+            .error-msg {
+                background: rgba(196, 30, 58, 0.3);
+                border: 1px solid var(--christmas-red);
+                color: var(--christmas-white);
+                padding: 12px 15px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                font-size: 14px;
+                display: none;
+            }
+
+            .error-msg.show {
+                display: block;
+            }
+
+            /* 裝飾 */
+            .decorations {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                overflow: hidden;
+                z-index: -1;
+            }
+
+            .decoration {
+                position: absolute;
+                font-size: 30px;
+                opacity: 0.3;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="decorations" id="decorations"></div>
+
+        <div class="container">
+            <!-- 表單畫面 -->
+            <div class="form-screen" id="formScreen">
+                <div class="header">
+                    <h1>🎄 聖誕交換禮物 🎁</h1>
+                    <p>請填寫你的資料加入抽獎</p>
+                </div>
+
+                <div class="error-msg" id="errorMsg"></div>
+
+                <div class="form-group">
+                    <label>👤 你的姓名</label>
+                    <input type="text" id="nameInput" placeholder="請輸入姓名" maxlength="20" />
+                </div>
+
+                <div class="form-group">
+                    <label>📷 你的照片</label>
+                    <div class="photo-upload" id="photoUpload" onclick="document.getElementById('photoInput').click()">
+                        <input type="file" id="photoInput" accept="image/*" capture="user" />
+                        <div class="placeholder" id="photoPlaceholder">
+                            <div class="icon">📸</div>
+                            <div class="text">點擊上傳照片</div>
+                        </div>
+                        <img id="photoPreview" style="display: none" />
+                    </div>
+                    <div class="photo-options">
+                        <button
+                            type="button"
+                            class="photo-option-btn"
+                            onclick="document.getElementById('photoInput').click()"
+                        >
+                            📁 選擇照片
+                        </button>
+                        <button type="button" class="photo-option-btn" onclick="takePhoto()">📷 拍照</button>
+                    </div>
+                </div>
+
+                <button class="submit-btn" id="submitBtn" onclick="submitForm()">🎅 加入抽獎</button>
+            </div>
+
+            <!-- 載入中 -->
+            <div class="loading" id="loadingScreen">
+                <div class="spinner"></div>
+                <p>正在加入抽獎池...</p>
+            </div>
+
+            <!-- 成功畫面 -->
+            <div class="success-screen" id="successScreen">
+                <div class="icon">✅</div>
+                <h2>成功加入！</h2>
+                <p>請在大螢幕上找到自己<br />等待抽獎開始 🎉</p>
+                <div class="user-preview">
+                    <div class="user-avatar">
+                        <img id="successAvatar" src="" />
+                    </div>
+                    <div class="user-name" id="successName"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Firebase SDK -->
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+
+        <script>
+            // ==================== Firebase 設定 ====================
+            // 請將下方的設定替換成你自己的 Firebase 專案設定
+            const firebaseConfig = {
+                apiKey: 'AIzaSyCao44vYtNN_LJDFWe1FfssDT9H2e2DZEs',
+                authDomain: 'gift-exchange-ff3d4.firebaseapp.com',
+                databaseURL: 'https://gift-exchange-ff3d4-default-rtdb.asia-southeast1.firebasedatabase.app',
+                projectId: 'gift-exchange-ff3d4',
+                storageBucket: 'gift-exchange-ff3d4.firebasestorage.app',
+                messagingSenderId: '435810354824',
+                appId: '1:435810354824:web:879aded64a1a01a733813d',
+                measurementId: 'G-V6CW8BFWV6',
+            }
+
+            // 初始化 Firebase
+            firebase.initializeApp(firebaseConfig)
+            const database = firebase.database()
+            const storage = firebase.storage()
+
+            // ==================== 變數 ====================
+            let selectedPhoto = null
+            let photoDataUrl = null
+
+            // ==================== 照片處理 ====================
+            document.getElementById('photoInput').addEventListener('change', function (e) {
+                const file = e.target.files[0]
+                if (file) {
+                    processPhoto(file)
+                }
+            })
+
+            function takePhoto() {
+                const input = document.getElementById('photoInput')
+                input.setAttribute('capture', 'user')
+                input.click()
+            }
+
+            function processPhoto(file) {
+                // 檢查檔案大小 (限制 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    showError('照片檔案過大，請選擇小於 5MB 的照片')
+                    return
+                }
+
+                selectedPhoto = file
+
+                // 壓縮並預覽照片
+                const reader = new FileReader()
+                reader.onload = function (e) {
+                    const img = new Image()
+                    img.onload = function () {
+                        // 壓縮照片
+                        const canvas = document.createElement('canvas')
+                        const maxSize = 500
+                        let width = img.width
+                        let height = img.height
+
+                        if (width > height) {
+                            if (width > maxSize) {
+                                height *= maxSize / width
+                                width = maxSize
+                            }
+                        } else {
+                            if (height > maxSize) {
+                                width *= maxSize / height
+                                height = maxSize
+                            }
+                        }
+
+                        canvas.width = width
+                        canvas.height = height
+                        const ctx = canvas.getContext('2d')
+                        ctx.drawImage(img, 0, 0, width, height)
+
+                        photoDataUrl = canvas.toDataURL('image/jpeg', 0.8)
+
+                        // 顯示預覽
+                        const preview = document.getElementById('photoPreview')
+                        preview.src = photoDataUrl
+                        preview.style.display = 'block'
+                        document.getElementById('photoPlaceholder').style.display = 'none'
+                        document.getElementById('photoUpload').classList.add('has-photo')
+                    }
+                    img.src = e.target.result
+                }
+                reader.readAsDataURL(file)
+            }
+
+            // ==================== 表單提交 ====================
+            async function submitForm() {
+                const name = document.getElementById('nameInput').value.trim()
+
+                // 驗證
+                if (!name) {
+                    showError('請輸入你的姓名')
+                    return
+                }
+
+                if (!photoDataUrl) {
+                    showError('請上傳你的照片')
+                    return
+                }
+
+                // 顯示載入中
+                document.getElementById('formScreen').classList.add('hide')
+                document.getElementById('loadingScreen').classList.add('show')
+
+                try {
+                    // 生成唯一 ID
+                    const oderId = Date.now().toString(36) + Math.random().toString(36).substr(2)
+
+                    // 上傳照片到 Firebase Storage
+                    const photoRef = storage.ref().child(`photos/${oderId}.jpg`)
+
+                    // 將 base64 轉換為 blob
+                    const response = await fetch(photoDataUrl)
+                    const blob = await response.blob()
+
+                    await photoRef.put(blob)
+                    const photoUrl = await photoRef.getDownloadURL()
+
+                    // 儲存參加者資料到 Realtime Database
+                    await database.ref('participants/' + oderId).set({
+                        id: oderId,
+                        name: name,
+                        avatar: photoUrl,
+                        joinedAt: Date.now(),
+                    })
+
+                    // 顯示成功畫面
+                    document.getElementById('loadingScreen').classList.remove('show')
+                    document.getElementById('successScreen').classList.add('show')
+                    document.getElementById('successAvatar').src = photoDataUrl
+                    document.getElementById('successName').textContent = name
+                } catch (error) {
+                    console.error('Error:', error)
+                    document.getElementById('loadingScreen').classList.remove('show')
+                    document.getElementById('formScreen').classList.remove('hide')
+                    showError('發生錯誤，請再試一次：' + error.message)
+                }
+            }
+
+            // ==================== 輔助函數 ====================
+            function showError(msg) {
+                const errorEl = document.getElementById('errorMsg')
+                errorEl.textContent = msg
+                errorEl.classList.add('show')
+                setTimeout(() => errorEl.classList.remove('show'), 5000)
+            }
+
+            // 裝飾動畫
+            function createDecorations() {
+                const container = document.getElementById('decorations')
+                const emojis = ['❄️', '🎄', '⭐', '🎁', '🔔', '🎅']
+
+                for (let i = 0; i < 15; i++) {
+                    const dec = document.createElement('div')
+                    dec.className = 'decoration'
+                    dec.textContent = emojis[Math.floor(Math.random() * emojis.length)]
+                    dec.style.left = Math.random() * 100 + '%'
+                    dec.style.top = Math.random() * 100 + '%'
+                    container.appendChild(dec)
+                }
+            }
+
+            createDecorations()
+        </script>
+    </body>
+</html>
