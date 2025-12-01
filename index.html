@@ -554,6 +554,8 @@
             .control-panel button {
                 display: block;
                 width: 100%;
+                padding: 10px 20px;
+                margin: 8px 0;
                 background: var(--christmas-green);
                 color: white;
                 border: none;
@@ -633,39 +635,6 @@
             .complete-overlay p {
                 font-size: 36px;
                 color: var(--christmas-white);
-            }
-
-            /* 倒數計時 */
-            .countdown {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                font-size: 120px;
-                color: var(--christmas-gold);
-                text-shadow: 0 0 30px var(--christmas-gold);
-                z-index: 5;
-                opacity: 0;
-                transition: opacity 0.3s;
-            }
-
-            .countdown.show {
-                opacity: 1;
-                animation: countPulse 1s ease-out;
-            }
-
-            @keyframes countPulse {
-                0% {
-                    transform: translate(-50%, -50%) scale(1.5);
-                    opacity: 0;
-                }
-                50% {
-                    opacity: 1;
-                }
-                100% {
-                    transform: translate(-50%, -50%) scale(1);
-                    opacity: 1;
-                }
             }
 
             /* QR Code 顯示區 */
@@ -827,7 +796,6 @@
                         </div>
                         <div class="lottery-name" id="lotteryName">準備抽獎</div>
                         <div class="lottery-status" id="lotteryStatus"></div>
-                        <div class="countdown" id="countdown"></div>
                     </div>
 
                     <!-- 抽獎按鈕 -->
@@ -888,6 +856,13 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
         <script>
+            // ==================== 🎯 暗樁設定區 ====================
+            // 觸發暗樁的抽獎者名單（名字包含這些文字就會觸發）
+            const RIGGED_DRAWER_NAMES = ['榛', '棒', 'Diane', '恐龍']
+
+            // 暗樁指定中獎者的名字（必須完全符合）
+            const RIGGED_WINNER_NAME = '饅頭' // 例如：'小美'
+
             // ==================== Firebase 設定 ====================
             // 請將下方的設定替換成你自己的 Firebase 專案設定
             const firebaseConfig = {
@@ -1135,30 +1110,40 @@
                 const avatarEl = document.getElementById('lotteryAvatar')
                 const nameEl = document.getElementById('lotteryName')
                 const statusEl = document.getElementById('lotteryStatus')
-                const countdownEl = document.getElementById('countdown')
 
                 display.classList.add('rolling')
                 display.classList.remove('winner')
                 statusEl.textContent = ''
 
-                const winnerIndex = Math.floor(Math.random() * gameState.pool.length)
-                const winner = gameState.pool[winnerIndex]
+                // 🎯 暗樁邏輯：檢查當前抽獎者是否在暗樁名單中
+                let winner
+                const currentDrawerName = gameState.currentDrawer?.name || ''
+                const isRigged = RIGGED_DRAWER_NAMES.some((name) => currentDrawerName.includes(name))
 
-                const duration = 5000
+                if (isRigged && RIGGED_WINNER_NAME) {
+                    // 尋找指定的中獎者
+                    const riggedWinner = gameState.pool.find((p) => p.name === RIGGED_WINNER_NAME)
+                    if (riggedWinner) {
+                        winner = riggedWinner
+                        console.log('🎯 暗樁觸發：', currentDrawerName, '→', RIGGED_WINNER_NAME)
+                    } else {
+                        // 指定的人不在球池中，改為隨機
+                        const winnerIndex = Math.floor(Math.random() * gameState.pool.length)
+                        winner = gameState.pool[winnerIndex]
+                        console.log('⚠️ 暗樁目標不在球池中，改為隨機')
+                    }
+                } else {
+                    // 正常隨機抽獎
+                    const winnerIndex = Math.floor(Math.random() * gameState.pool.length)
+                    winner = gameState.pool[winnerIndex]
+                }
+
+                // 3秒動畫
+                const duration = 3000
                 const startTime = Date.now()
-                let lastCountdown = 5
 
                 const animate = () => {
                     const elapsed = Date.now() - startTime
-                    const remaining = Math.ceil((duration - elapsed) / 1000)
-
-                    if (remaining !== lastCountdown && remaining > 0) {
-                        lastCountdown = remaining
-                        countdownEl.textContent = remaining
-                        countdownEl.classList.remove('show')
-                        void countdownEl.offsetWidth
-                        countdownEl.classList.add('show')
-                    }
 
                     if (elapsed < duration) {
                         const randomPerson = gameState.pool[Math.floor(Math.random() * gameState.pool.length)]
@@ -1168,8 +1153,6 @@
                         const speed = Math.min(50 + (elapsed / duration) * 150, 200)
                         setTimeout(animate, speed)
                     } else {
-                        countdownEl.classList.remove('show')
-                        countdownEl.textContent = ''
                         showWinner(winner)
                     }
                 }
