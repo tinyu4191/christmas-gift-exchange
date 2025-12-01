@@ -858,7 +858,7 @@
             function generateQRCode() {
                 const currentUrl = window.location.href
                 const joinUrl = currentUrl.replace(/index\.html.*$/, 'join.html').replace(/\/$/, '/join.html')
-
+                console.log('joinUrl', joinUrl)
                 document.getElementById('joinUrl').textContent =
                     joinUrl.length > 30 ? joinUrl.substring(0, 30) + '...' : joinUrl
 
