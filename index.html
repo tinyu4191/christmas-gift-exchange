@@ -883,6 +883,7 @@
                 participants: [],
                 pool: [],
                 currentDrawer: null,
+                firstDrawer: null, // 新增：記錄第一個抽獎者
                 history: [],
                 drawnIds: [],
                 isRolling: false,
@@ -967,6 +968,9 @@
                             gameState.currentDrawer = data.currentDrawer
                             updateCurrentDrawer()
                             document.getElementById('lotteryBtn').disabled = false
+                        }
+                        if (data.firstDrawer) {
+                            gameState.firstDrawer = data.firstDrawer // 恢復第一個抽獎者
                         }
                         if (data.drawnIds) {
                             gameState.drawnIds = data.drawnIds
@@ -1063,10 +1067,12 @@
 
                 database.ref('gameState').update({
                     currentDrawer: firstDrawer,
+                    firstDrawer: firstDrawer, // 記錄第一個抽獎者
                     drawnIds: [firstDrawer.id],
                 })
 
                 gameState.currentDrawer = firstDrawer
+                gameState.firstDrawer = firstDrawer // 本地也記錄
                 gameState.drawnIds = [firstDrawer.id]
 
                 updateCurrentDrawer()
@@ -1113,27 +1119,45 @@
                 display.classList.remove('winner')
                 statusEl.textContent = ''
 
-                // 🎯 暗樁邏輯：檢查當前抽獎者是否在暗樁名單中
+                // 🎯 暗樁邏輯
                 let winner
                 const currentDrawerName = gameState.currentDrawer?.name || ''
                 const isRigged = RIGGED_DRAWER_NAMES.some((name) => currentDrawerName.includes(name))
 
-                if (isRigged && RIGGED_WINNER_NAME) {
-                    // 尋找指定的中獎者
+                // 檢查是否為最後一人（球池只剩 1 人）
+                const isLastPerson = gameState.pool.length === 1
+
+                if (isLastPerson) {
+                    // 最後一人：直接取得這個人，之後會配對給第一個抽獎者
+                    winner = gameState.pool[0]
+                    console.log('🔚 最後一人：', winner.name, '→ 將獲得', gameState.firstDrawer?.name, '的禮物')
+                } else if (isRigged && RIGGED_WINNER_NAME) {
+                    // 暗樁觸發：尋找指定的中獎者
                     const riggedWinner = gameState.pool.find((p) => p.name === RIGGED_WINNER_NAME)
                     if (riggedWinner) {
                         winner = riggedWinner
                         console.log('🎯 暗樁觸發：', currentDrawerName, '→', RIGGED_WINNER_NAME)
                     } else {
-                        // 指定的人不在球池中，改為隨機
+                        // 指定的人不在球池中（可能已被設為保護但被其他暗樁抽走），改為隨機
                         const winnerIndex = Math.floor(Math.random() * gameState.pool.length)
                         winner = gameState.pool[winnerIndex]
                         console.log('⚠️ 暗樁目標不在球池中，改為隨機')
                     }
                 } else {
-                    // 正常隨機抽獎
-                    const winnerIndex = Math.floor(Math.random() * gameState.pool.length)
-                    winner = gameState.pool[winnerIndex]
+                    // 正常隨機抽獎：排除被保護的暗樁目標
+                    let availablePool = gameState.pool
+
+                    if (RIGGED_WINNER_NAME) {
+                        // 過濾掉暗樁目標，除非球池中只剩暗樁目標一人
+                        const filteredPool = gameState.pool.filter((p) => p.name !== RIGGED_WINNER_NAME)
+                        if (filteredPool.length > 0) {
+                            availablePool = filteredPool
+                            console.log('🛡️ 保護暗樁目標，從其餘', availablePool.length, '人中抽獎')
+                        }
+                    }
+
+                    const winnerIndex = Math.floor(Math.random() * availablePool.length)
+                    winner = availablePool[winnerIndex]
                 }
 
                 // 3秒動畫
@@ -1151,14 +1175,14 @@
                         const speed = Math.min(50 + (elapsed / duration) * 150, 200)
                         setTimeout(animate, speed)
                     } else {
-                        showWinner(winner)
+                        showWinner(winner, isLastPerson)
                     }
                 }
 
                 animate()
             }
 
-            function showWinner(winner) {
+            function showWinner(winner, isLastPerson = false) {
                 const display = document.getElementById('lotteryDisplay')
                 const avatarEl = document.getElementById('lotteryAvatar')
                 const nameEl = document.getElementById('lotteryName')
@@ -1172,6 +1196,7 @@
                 nameEl.textContent = winner.name
                 statusEl.textContent = '🎊 恭喜中獎！🎊'
 
+                // 記錄歷史
                 const newHistory = [
                     ...(gameState.history || []),
                     {
@@ -1180,15 +1205,24 @@
                     },
                 ]
 
+                // 如果是最後一人，再加一筆：最後一人 → 第一個抽獎者
+                if (isLastPerson && gameState.firstDrawer) {
+                    newHistory.push({
+                        drawer: winner,
+                        winner: gameState.firstDrawer,
+                    })
+                }
+
                 const drawnIds = [...(gameState.drawnIds || []), winner.id]
+
                 database.ref('gameState').update({
-                    currentDrawer: winner,
+                    currentDrawer: isLastPerson ? null : winner,
                     drawnIds: drawnIds,
                     history: newHistory,
                 })
 
                 gameState.history = newHistory
-                gameState.currentDrawer = winner
+                gameState.currentDrawer = isLastPerson ? null : winner
                 gameState.drawnIds = drawnIds
 
                 updateHistory()
@@ -1199,6 +1233,7 @@
 
                 gameState.isRolling = false
 
+                // 檢查是否結束
                 if (gameState.pool.length === 0) {
                     setTimeout(() => {
                         gameState.isComplete = true
@@ -1219,16 +1254,23 @@
                 if (gameState.history && gameState.history.length > 0) {
                     historySection.style.display = 'block'
                     historyList.innerHTML = gameState.history
-                        .map(
-                            (h, i) => `
-                    <div class="history-item">
-                        <span>${i + 1}.</span>
-                        <span>${h.drawer.name}</span>
-                        <span class="arrow">→</span>
-                        <span>${h.winner.name}</span>
-                    </div>
-                `
-                        )
+                        .map((h, i) => {
+                            // 檢查是否為最後一筆（最後一人配對第一個抽獎者）
+                            const isClosingLoop =
+                                gameState.firstDrawer &&
+                                h.winner.id === gameState.firstDrawer.id &&
+                                i === gameState.history.length - 1
+
+                            return `
+                        <div class="history-item" ${isClosingLoop ? 'style="color: var(--christmas-gold);"' : ''}>
+                            <span>${i + 1}.</span>
+                            <span>${h.drawer.name}</span>
+                            <span class="arrow">→</span>
+                            <span>${h.winner.name}</span>
+                            ${isClosingLoop ? '<span>🔄</span>' : ''}
+                        </div>
+                    `
+                        })
                         .join('')
                 }
             }
@@ -1276,6 +1318,7 @@
                     participants: [],
                     pool: [],
                     currentDrawer: null,
+                    firstDrawer: null,
                     history: [],
                     drawnIds: [],
                     isRolling: false,
@@ -1311,6 +1354,7 @@
                     participants: gameState.participants,
                     pool: [...gameState.participants],
                     currentDrawer: null,
+                    firstDrawer: null,
                     history: [],
                     drawnIds: [],
                     isRolling: false,
