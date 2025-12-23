@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎄 聖誕交換禮物回顧 🎁</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --christmas-red: #c41e3a;
+            --christmas-green: #165b33;
+            --christmas-gold: #f8b229;
+            --christmas-white: #f5f5f5;
+            --christmas-black: #1a1a1a;
+            --dark-green: #0d3320;
+            --tree-green: #1e5631;
+            --tree-dark: #0d3320;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(180deg, #0a1628 0%, #1a1a2e 50%, #0d3320 100%);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .main-container {
+            width: 1920px;
+            height: 1080px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 雪花背景 */
+        .snowflakes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .snowflake {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.5em;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10%) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0.3; }
+        }
+
+        /* 標題 */
+        .header {
+            text-align: center;
+            padding: 30px 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 56px;
+            color: var(--christmas-white);
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5), 0 0 30px var(--christmas-gold);
+            letter-spacing: 6px;
+        }
+
+        .header .subtitle {
+            font-size: 24px;
+            color: var(--christmas-gold);
+            margin-top: 8px;
+        }
+
+        /* 聖誕樹容器 */
+        .tree-container {
+            position: absolute;
+            top: 140px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1000px;
+            height: 900px;
+            z-index: 5;
+        }
+
+        /* 聖誕樹 */
+        .christmas-tree {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 樹幹 */
+        .tree-trunk {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 100px;
+            background: linear-gradient(90deg, #4a2c0a 0%, #8b4513 50%, #4a2c0a 100%);
+            border-radius: 5px;
+        }
+
+        /* 樹的層次 */
+        .tree-layer {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+
+        .tree-layer-1 {
+            bottom: 80px;
+            border-width: 0 420px 580px 420px;
+            border-color: transparent transparent var(--tree-green) transparent;
+        }
+
+        .tree-layer-1::before {
+            content: '';
+            position: absolute;
+            top: 60px;
+            left: -400px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 400px 540px 400px;
+            border-color: transparent transparent var(--tree-dark) transparent;
+            opacity: 0.5;
+        }
+
+        /* 樹頂星星 */
+        .tree-star {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 80px;
+            color: var(--christmas-gold);
+            text-shadow: 0 0 30px var(--christmas-gold), 0 0 60px var(--christmas-gold);
+            animation: starGlow 2s ease-in-out infinite;
+            z-index: 20;
+        }
+
+        @keyframes starGlow {
+            0%, 100% { transform: translateX(-50%) scale(1); opacity: 1; }
+            50% { transform: translateX(-50%) scale(1.1); opacity: 0.8; }
+        }
+
+        /* 裝飾彩燈 */
+        .tree-lights {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 8;
+        }
+
+        .light {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: twinkle 1.5s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+        }
+
+        /* 裝飾球容器 */
+        .ornaments-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 15;
+        }
+
+        /* 裝飾球 */
+        .ornament {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 15;
+            display: flex;
+            overflow: hidden;
+            border: 4px solid var(--christmas-gold);
+            box-shadow: 
+                0 5px 20px rgba(0,0,0,0.4),
+                inset 0 -20px 40px rgba(0,0,0,0.2),
+                inset 0 20px 40px rgba(255,255,255,0.1);
+        }
+
+        .ornament::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 15px;
+            background: linear-gradient(180deg, #888 0%, #ccc 50%, #888 100%);
+            border-radius: 3px 3px 0 0;
+            z-index: 2;
+        }
+
+        .ornament::after {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 15%;
+            width: 25%;
+            height: 25%;
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.6) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 3;
+        }
+
+        .ornament:hover {
+            transform: scale(2.2);
+            z-index: 100;
+            box-shadow: 
+                0 15px 50px rgba(0,0,0,0.6),
+                0 0 30px var(--christmas-gold);
+        }
+
+        /* 球內的頭像區 */
+        .ornament-inner {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .ornament-half {
+            width: 50%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ornament-half.left {
+            background: linear-gradient(135deg, #ff6b6b 0%, var(--christmas-red) 100%);
+        }
+
+        .ornament-half.right {
+            background: linear-gradient(135deg, var(--christmas-green) 0%, #0d5a2e 100%);
+        }
+
+        .ornament-half img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .ornament-divider {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 100%;
+            background: var(--christmas-gold);
+            z-index: 5;
+        }
+
+        /* 懸停時顯示的詳細資訊 */
+        .ornament-info {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 10px 15px;
+            border-radius: 10px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 10;
+            border: 2px solid var(--christmas-gold);
+        }
+
+        .ornament:hover .ornament-info {
+            opacity: 1;
+        }
+
+        .ornament-info .names {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            color: var(--christmas-white);
+        }
+
+        .ornament-info .drawer-name {
+            color: #ff6b6b;
+        }
+
+        .ornament-info .arrow {
+            color: var(--christmas-gold);
+            font-size: 20px;
+        }
+
+        .ornament-info .winner-name {
+            color: #4ade80;
+        }
+
+        .ornament-info .gift-text {
+            font-size: 12px;
+            color: #9ca3af;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        /* 地面裝飾 */
+        .ground {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.1) 100%);
+            z-index: 2;
+        }
+
+        /* 禮物盒裝飾 */
+        .gifts {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 30px;
+            z-index: 3;
+        }
+
+        .gift-box {
+            font-size: 50px;
+            animation: giftBounce 2s ease-in-out infinite;
+        }
+
+        .gift-box:nth-child(2) { animation-delay: -0.5s; }
+        .gift-box:nth-child(3) { animation-delay: -1s; }
+        .gift-box:nth-child(4) { animation-delay: -1.5s; }
+
+        @keyframes giftBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* 提示文字 */
+        .hint {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 18px;
+            z-index: 10;
+            text-align: center;
+        }
+
+        /* 返回按鈕 */
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            padding: 12px 24px;
+            background: var(--christmas-red);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(196, 30, 58, 0.4);
+        }
+
+        .back-btn:hover {
+            background: #a01830;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- 雪花背景 -->
+        <div class="snowflakes" id="snowflakes"></div>
+
+        <!-- 標題 -->
+        <header class="header">
+            <h1>🎄 聖誕交換禮物回顧 🎁</h1>
+            <p class="subtitle">Merry Christmas 2024</p>
+        </header>
+
+        <!-- 聖誕樹容器 -->
+        <div class="tree-container">
+            <!-- 聖誕樹 -->
+            <div class="christmas-tree">
+                <div class="tree-star">⭐</div>
+                <div class="tree-layer tree-layer-1"></div>
+                <div class="tree-trunk"></div>
+            </div>
+
+            <!-- 彩燈 -->
+            <div class="tree-lights" id="treeLights"></div>
+
+            <!-- 裝飾球 -->
+            <div class="ornaments-container" id="ornamentsContainer"></div>
+        </div>
+
+        <!-- 地面 -->
+        <div class="ground"></div>
+
+        <!-- 禮物盒 -->
+        <div class="gifts">
+            <div class="gift-box">🎁</div>
+            <div class="gift-box">🎀</div>
+            <div class="gift-box">🎁</div>
+            <div class="gift-box">🎀</div>
+            <div class="gift-box">🎁</div>
+        </div>
+
+        <!-- 提示文字 -->
+        <div class="hint">✨ 滑鼠移到裝飾球上查看抽獎結果 ✨</div>
+    </div>
+
+    <!-- 返回按鈕（測試用） -->
+    <button class="back-btn" onclick="history.back()">← 返回</button>
+
+    <script>
+        // ==================== 模擬資料 ====================
+        // 這些資料之後會從 index.html 傳過來
+        const mockHistory = [
+            { drawer: { name: '小明', avatar: '' }, winner: { name: '小華', avatar: '' } },
+            { drawer: { name: '小華', avatar: '' }, winner: { name: '阿強', avatar: '' } },
+            { drawer: { name: '阿強', avatar: '' }, winner: { name: '小玲', avatar: '' } },
+            { drawer: { name: '小玲', avatar: '' }, winner: { name: '志明', avatar: '' } },
+            { drawer: { name: '志明', avatar: '' }, winner: { name: '春嬌', avatar: '' } },
+            { drawer: { name: '春嬌', avatar: '' }, winner: { name: '小王', avatar: '' } },
+            { drawer: { name: '小王', avatar: '' }, winner: { name: '阿珍', avatar: '' } },
+            { drawer: { name: '阿珍', avatar: '' }, winner: { name: '大偉', avatar: '' } },
+            { drawer: { name: '大偉', avatar: '' }, winner: { name: '小芳', avatar: '' } },
+            { drawer: { name: '小芳', avatar: '' }, winner: { name: '阿傑', avatar: '' } },
+            { drawer: { name: '阿傑', avatar: '' }, winner: { name: '小雯', avatar: '' } },
+            { drawer: { name: '小雯', avatar: '' }, winner: { name: '建宏', avatar: '' } },
+            { drawer: { name: '建宏', avatar: '' }, winner: { name: '雅婷', avatar: '' } },
+            { drawer: { name: '雅婷', avatar: '' }, winner: { name: '王饅頭', avatar: '' } },
+            { drawer: { name: '王饅頭', avatar: '' }, winner: { name: '小榛果', avatar: '' } },
+            { drawer: { name: '小榛果', avatar: '' }, winner: { name: '小明', avatar: '' } }, // 閉環
+        ];
+
+        // 嘗試從 URL 參數或 localStorage 取得真實資料
+        function getHistoryData() {
+            // 先檢查 localStorage
+            const stored = localStorage.getItem('giftExchangeHistory');
+            if (stored) {
+                try {
+                    return JSON.parse(stored);
+                } catch (e) {
+                    console.log('使用模擬資料');
+                }
+            }
+            return mockHistory;
+        }
+
+        // ==================== 初始化 ====================
+        function init() {
+            createSnowflakes();
+            createTreeLights();
+            createOrnaments();
+        }
+
+        // ==================== 雪花效果 ====================
+        function createSnowflakes() {
+            const container = document.getElementById('snowflakes');
+            const snowflakeChars = ['❄', '❅', '❆', '✻', '✼'];
+            
+            for (let i = 0; i < 60; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.innerHTML = snowflakeChars[Math.floor(Math.random() * snowflakeChars.length)];
+                snowflake.style.left = Math.random() * 100 + '%';
+                snowflake.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                snowflake.style.animationDelay = -(Math.random() * 20) + 's';
+                snowflake.style.fontSize = (Math.random() * 1.5 + 0.5) + 'em';
+                container.appendChild(snowflake);
+            }
+        }
+
+        // ==================== 彩燈效果 ====================
+        function createTreeLights() {
+            const container = document.getElementById('treeLights');
+            const colors = ['#ff0000', '#00ff00', '#ffff00', '#ff00ff', '#00ffff', '#ff8800'];
+            
+            // 在樹的範圍內隨機放置彩燈
+            for (let i = 0; i < 40; i++) {
+                const light = document.createElement('div');
+                light.className = 'light';
+                
+                // 計算在三角形樹內的位置
+                const progress = Math.random();
+                const y = 120 + progress * 550;
+                const maxWidth = progress * 380;
+                const x = 500 + (Math.random() - 0.5) * maxWidth * 2;
+                
+                light.style.left = x + 'px';
+                light.style.top = y + 'px';
+                light.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                light.style.animationDelay = (Math.random() * 2) + 's';
+                light.style.boxShadow = `0 0 10px ${light.style.backgroundColor}`;
+                
+                container.appendChild(light);
+            }
+        }
+
+        // ==================== 裝飾球 ====================
+        function createOrnaments() {
+            const container = document.getElementById('ornamentsContainer');
+            const history = getHistoryData();
+            
+            // 預先定義 16 個裝飾球的位置（在聖誕樹範圍內）
+            const positions = generateOrnamentPositions(history.length);
+            
+            history.forEach((item, index) => {
+                const pos = positions[index];
+                const ornament = createOrnament(item, pos);
+                container.appendChild(ornament);
+            });
+        }
+
+        function generateOrnamentPositions(count) {
+            const positions = [];
+            const usedAreas = [];
+            
+            // 定義樹的區域（三角形）
+            const treeTop = 140;
+            const treeBottom = 680;
+            const treeCenterX = 500;
+            
+            for (let i = 0; i < count; i++) {
+                let attempts = 0;
+                let pos;
+                
+                do {
+                    // 隨機 Y 位置
+                    const y = treeTop + Math.random() * (treeBottom - treeTop);
+                    
+                    // 根據 Y 計算可用的 X 範圍（三角形）
+                    const progress = (y - treeTop) / (treeBottom - treeTop);
+                    const maxOffset = progress * 340;
+                    const x = treeCenterX + (Math.random() - 0.5) * maxOffset * 2;
+                    
+                    pos = { x, y };
+                    attempts++;
+                    
+                    // 檢查是否與其他球重疊
+                    const tooClose = usedAreas.some(used => {
+                        const dist = Math.sqrt(Math.pow(pos.x - used.x, 2) + Math.pow(pos.y - used.y, 2));
+                        return dist < 100;
+                    });
+                    
+                    if (!tooClose || attempts > 50) {
+                        usedAreas.push(pos);
+                        break;
+                    }
+                } while (attempts < 50);
+                
+                positions.push(pos);
+            }
+            
+            return positions;
+        }
+
+        function createOrnament(item, pos) {
+            const ornament = document.createElement('div');
+            ornament.className = 'ornament';
+            ornament.style.left = (pos.x - 45) + 'px';
+            ornament.style.top = (pos.y - 45) + 'px';
+            
+            // 隨機輕微旋轉和動畫延遲
+            const rotation = (Math.random() - 0.5) * 10;
+            ornament.style.transform = `rotate(${rotation}deg)`;
+            
+            // 生成頭像或佔位符
+            const drawerAvatar = item.drawer.avatar || generatePlaceholderAvatar(item.drawer.name);
+            const winnerAvatar = item.winner.avatar || generatePlaceholderAvatar(item.winner.name);
+            
+            ornament.innerHTML = `
+                <div class="ornament-inner">
+                    <div class="ornament-half left">
+                        <img src="${drawerAvatar}" alt="${item.drawer.name}" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\\"font-size:24px;color:white;\\">${item.drawer.name.charAt(0)}</span>'">
+                    </div>
+                    <div class="ornament-half right">
+                        <img src="${winnerAvatar}" alt="${item.winner.name}" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\\"font-size:24px;color:white;\\">${item.winner.name.charAt(0)}</span>'">
+                    </div>
+                    <div class="ornament-divider"></div>
+                </div>
+                <div class="ornament-info">
+                    <div class="names">
+                        <span class="drawer-name">${item.drawer.name}</span>
+                        <span class="arrow">→</span>
+                        <span class="winner-name">${item.winner.name}</span>
+                    </div>
+                    <div class="gift-text">${item.drawer.name} 獲得 ${item.winner.name} 的禮物</div>
+                </div>
+            `;
+            
+            return ornament;
+        }
+
+        function generatePlaceholderAvatar(name) {
+            const colors = [
+                '#c41e3a', '#165b33', '#4a90d9', '#9b59b6', '#e67e22',
+                '#27ae60', '#e74c3c', '#3498db', '#f39c12', '#8e44ad'
+            ];
+            const color = colors[name.charCodeAt(0) % colors.length];
+            const initial = name.charAt(0);
+            
+            return `data:image/svg+xml,${encodeURIComponent(`
+                <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+                    <rect width="100" height="100" fill="${color}"/>
+                    <text x="50" y="62" font-size="40" fill="white" text-anchor="middle" font-family="Arial">${initial}</text>
+                </svg>
+            `)}`;
+        }
+
+        // ==================== 啟動 ====================
+        init();
+    </script>
+</body>
+</html>
