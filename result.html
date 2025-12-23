@@ -130,7 +130,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
+            gap: 40px;
         }
 
         .ornament-row {
@@ -199,6 +199,38 @@
                 0 8px 25px rgba(255, 215, 0, 0.5),
                 inset 0 -10px 20px rgba(0,0,0,0.2),
                 inset 0 10px 20px rgba(255,255,255,0.3);
+        }
+
+        /* 球中間的頭像 */
+        .ball-avatar {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            z-index: 5;
+        }
+
+        .ball-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .ball-avatar .placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            background: rgba(0,0,0,0.3);
         }
 
         /* 禮物盒裝飾 */
@@ -499,35 +531,35 @@
             <!-- 裝飾球網格 -->
             <div class="ornaments-grid" id="ornamentsGrid">
                 <!-- 第1排：2顆 -->
-                <div class="ornament-row" style="margin-top: 60px;">
-                    <div class="ornament" data-index="0"><div class="highlight"></div></div>
-                    <div class="ornament" data-index="1"><div class="highlight"></div></div>
+                <div class="ornament-row" style="margin-top: 100px;">
+                    <div class="ornament" data-index="0"><div class="highlight"></div><div class="ball-avatar"></div></div>
+                    <div class="ornament" data-index="1"><div class="highlight"></div><div class="ball-avatar"></div></div>
                 </div>
                 <!-- 第2排：3顆 -->
                 <div class="ornament-row">
-                    <div class="ornament" data-index="2"><div class="highlight"></div></div>
-                    <div class="ornament" data-index="3"><div class="highlight"></div></div>
-                    <div class="ornament" data-index="4"><div class="highlight"></div></div>
+                    <div class="ornament" data-index="2"><div class="highlight"></div><div class="ball-avatar"></div></div>
+                    <div class="ornament" data-index="3"><div class="highlight"></div><div class="ball-avatar"></div></div>
+                    <div class="ornament" data-index="4"><div class="highlight"></div><div class="ball-avatar"></div></div>
                 </div>
                 <!-- 第3排：3顆 -->
-                <div class="ornament-row">
-                    <div class="ornament" data-index="5"><div class="highlight"></div></div>
-                    <div class="ornament" data-index="6"><div class="highlight"></div></div>
-                    <div class="ornament" data-index="7"><div class="highlight"></div></div>
+                <div class="ornament-row" style="gap: 70px;">
+                    <div class="ornament" data-index="5"><div class="highlight"></div><div class="ball-avatar"></div></div>
+                    <div class="ornament" data-index="6"><div class="highlight"></div><div class="ball-avatar"></div></div>
+                    <div class="ornament" data-index="7"><div class="highlight"></div><div class="ball-avatar"></div></div>
                 </div>
                 <!-- 第4排：4顆 -->
-                <div class="ornament-row">
-                    <div class="ornament" data-index="8"><div class="highlight"></div></div>
-                    <div class="ornament" data-index="9"><div class="highlight"></div></div>
-                    <div class="ornament" data-index="10"><div class="highlight"></div></div>
-                    <div class="ornament" data-index="11"><div class="highlight"></div></div>
+                <div class="ornament-row" style="gap: 60px;">
+                    <div class="ornament" data-index="8"><div class="highlight"></div><div class="ball-avatar"></div></div>
+                    <div class="ornament" data-index="9"><div class="highlight"></div><div class="ball-avatar"></div></div>
+                    <div class="ornament" data-index="10"><div class="highlight"></div><div class="ball-avatar"></div></div>
+                    <div class="ornament" data-index="11"><div class="highlight"></div><div class="ball-avatar"></div></div>
                 </div>
                 <!-- 第5排：4顆 -->
-                <div class="ornament-row">
-                    <div class="ornament" data-index="12"><div class="highlight"></div></div>
-                    <div class="ornament" data-index="13"><div class="highlight"></div></div>
-                    <div class="ornament" data-index="14"><div class="highlight"></div></div>
-                    <div class="ornament" data-index="15"><div class="highlight"></div></div>
+                <div class="ornament-row" style="gap: 100px;">
+                    <div class="ornament" data-index="12"><div class="highlight"></div><div class="ball-avatar"></div></div>
+                    <div class="ornament" data-index="13"><div class="highlight"></div><div class="ball-avatar"></div></div>
+                    <div class="ornament" data-index="14"><div class="highlight"></div><div class="ball-avatar"></div></div>
+                    <div class="ornament" data-index="15"><div class="highlight"></div><div class="ball-avatar"></div></div>
                 </div>
             </div>
         </div>
@@ -674,14 +706,22 @@
             }
         }
 
-        // 綁定球的點擊事件
+        // 綁定球的點擊事件並設定頭像
         function bindOrnamentEvents() {
             const ornaments = document.querySelectorAll('.ornament');
             
             ornaments.forEach((ornament, index) => {
                 if (index < shuffledData.length) {
+                    const item = shuffledData[index];
+                    
+                    // 設定球中間的被抽中者頭像
+                    const ballAvatar = ornament.querySelector('.ball-avatar');
+                    const winnerAvatar = item.winner.avatar || generatePlaceholderAvatar(item.winner.name);
+                    ballAvatar.innerHTML = `<img src="${winnerAvatar}" alt="${item.winner.name}" onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'>${item.winner.name.charAt(0)}</div>'">`;
+                    
+                    // 點擊事件
                     ornament.addEventListener('click', () => {
-                        showModal(shuffledData[index]);
+                        showModal(item);
                     });
                 } else {
                     // 如果球數多於資料，隱藏多餘的球
