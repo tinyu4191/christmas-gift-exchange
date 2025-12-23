@@ -18,8 +18,10 @@
             --christmas-white: #f5f5f5;
             --christmas-black: #1a1a1a;
             --dark-green: #0d3320;
-            --tree-green: #1e5631;
-            --tree-dark: #0d3320;
+            --tree-green: #228b22;
+            --tree-dark: #1a6b1a;
+            --ball-gold: #ffd700;
+            --ball-gold-dark: #daa520;
         }
 
         body {
@@ -61,93 +63,52 @@
         /* 標題 */
         .header {
             text-align: center;
-            padding: 30px 0 20px;
+            padding: 25px 0 15px;
             position: relative;
             z-index: 10;
         }
 
         .header h1 {
-            font-size: 56px;
+            font-size: 52px;
             color: var(--christmas-white);
             text-shadow: 3px 3px 6px rgba(0,0,0,0.5), 0 0 30px var(--christmas-gold);
             letter-spacing: 6px;
         }
 
         .header .subtitle {
-            font-size: 24px;
+            font-size: 22px;
             color: var(--christmas-gold);
-            margin-top: 8px;
+            margin-top: 5px;
         }
 
-        /* 聖誕樹容器 */
-        .tree-container {
-            position: absolute;
-            top: 140px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 1000px;
-            height: 900px;
+        /* 聖誕樹區域 */
+        .tree-section {
+            position: relative;
+            width: 100%;
+            height: calc(100% - 120px);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 20px;
             z-index: 5;
         }
 
-        /* 聖誕樹 */
-        .christmas-tree {
+        /* 聖誕樹 SVG */
+        .christmas-tree-svg {
             position: absolute;
-            bottom: 0;
+            top: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 100%;
-            height: 100%;
-        }
-
-        /* 樹幹 */
-        .tree-trunk {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 100px;
-            background: linear-gradient(90deg, #4a2c0a 0%, #8b4513 50%, #4a2c0a 100%);
-            border-radius: 5px;
-        }
-
-        /* 樹的層次 */
-        .tree-layer {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-style: solid;
-        }
-
-        .tree-layer-1 {
-            bottom: 80px;
-            border-width: 0 420px 580px 420px;
-            border-color: transparent transparent var(--tree-green) transparent;
-        }
-
-        .tree-layer-1::before {
-            content: '';
-            position: absolute;
-            top: 60px;
-            left: -400px;
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 0 400px 540px 400px;
-            border-color: transparent transparent var(--tree-dark) transparent;
-            opacity: 0.5;
+            z-index: 2;
         }
 
         /* 樹頂星星 */
         .tree-star {
             position: absolute;
-            top: 20px;
+            top: 5px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 80px;
+            font-size: 70px;
             color: var(--christmas-gold);
             text-shadow: 0 0 30px var(--christmas-gold), 0 0 60px var(--christmas-gold);
             animation: starGlow 2s ease-in-out infinite;
@@ -155,239 +116,332 @@
         }
 
         @keyframes starGlow {
-            0%, 100% { transform: translateX(-50%) scale(1); opacity: 1; }
-            50% { transform: translateX(-50%) scale(1.1); opacity: 0.8; }
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.15); }
         }
 
-        /* 裝飾彩燈 */
-        .tree-lights {
+        /* 裝飾球網格 */
+        .ornaments-grid {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 8;
-        }
-
-        .light {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            animation: twinkle 1.5s ease-in-out infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.8); }
-        }
-
-        /* 裝飾球容器 */
-        .ornaments-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 15;
-        }
-
-        /* 裝飾球 */
-        .ornament {
-            position: absolute;
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
             z-index: 15;
             display: flex;
-            overflow: hidden;
-            border: 4px solid var(--christmas-gold);
-            box-shadow: 
-                0 5px 20px rgba(0,0,0,0.4),
-                inset 0 -20px 40px rgba(0,0,0,0.2),
-                inset 0 20px 40px rgba(255,255,255,0.1);
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
         }
 
+        .ornament-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* 金色聖誕球 */
+        .ornament {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+            background: radial-gradient(circle at 30% 30%, #fff8dc, var(--ball-gold) 40%, var(--ball-gold-dark) 100%);
+            border: 3px solid #b8860b;
+            box-shadow: 
+                0 4px 15px rgba(0,0,0,0.4),
+                inset 0 -10px 20px rgba(0,0,0,0.2),
+                inset 0 10px 20px rgba(255,255,255,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* 球頂掛鉤 */
         .ornament::before {
             content: '';
             position: absolute;
-            top: -8px;
+            top: -12px;
             left: 50%;
             transform: translateX(-50%);
-            width: 20px;
-            height: 15px;
-            background: linear-gradient(180deg, #888 0%, #ccc 50%, #888 100%);
+            width: 16px;
+            height: 12px;
+            background: linear-gradient(180deg, #c0c0c0 0%, #808080 100%);
             border-radius: 3px 3px 0 0;
-            z-index: 2;
         }
 
         .ornament::after {
             content: '';
             position: absolute;
-            top: 8px;
-            left: 15%;
-            width: 25%;
-            height: 25%;
-            background: radial-gradient(ellipse at center, rgba(255,255,255,0.6) 0%, transparent 70%);
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 12px;
+            border: 3px solid #808080;
+            border-bottom: none;
+            border-radius: 10px 10px 0 0;
+            background: transparent;
+        }
+
+        /* 球上的高光 */
+        .ornament .highlight {
+            position: absolute;
+            top: 12px;
+            left: 18px;
+            width: 20px;
+            height: 15px;
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.8) 0%, transparent 70%);
             border-radius: 50%;
-            z-index: 3;
         }
 
         .ornament:hover {
-            transform: scale(2.2);
-            z-index: 100;
+            transform: scale(1.15);
             box-shadow: 
-                0 15px 50px rgba(0,0,0,0.6),
-                0 0 30px var(--christmas-gold);
-        }
-
-        /* 球內的頭像區 */
-        .ornament-inner {
-            display: flex;
-            width: 100%;
-            height: 100%;
-        }
-
-        .ornament-half {
-            width: 50%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .ornament-half.left {
-            background: linear-gradient(135deg, #ff6b6b 0%, var(--christmas-red) 100%);
-        }
-
-        .ornament-half.right {
-            background: linear-gradient(135deg, var(--christmas-green) 0%, #0d5a2e 100%);
-        }
-
-        .ornament-half img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .ornament-divider {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 3px;
-            height: 100%;
-            background: var(--christmas-gold);
-            z-index: 5;
-        }
-
-        /* 懸停時顯示的詳細資訊 */
-        .ornament-info {
-            position: absolute;
-            bottom: -60px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.9);
-            padding: 10px 15px;
-            border-radius: 10px;
-            white-space: nowrap;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-            z-index: 10;
-            border: 2px solid var(--christmas-gold);
-        }
-
-        .ornament:hover .ornament-info {
-            opacity: 1;
-        }
-
-        .ornament-info .names {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 16px;
-            color: var(--christmas-white);
-        }
-
-        .ornament-info .drawer-name {
-            color: #ff6b6b;
-        }
-
-        .ornament-info .arrow {
-            color: var(--christmas-gold);
-            font-size: 20px;
-        }
-
-        .ornament-info .winner-name {
-            color: #4ade80;
-        }
-
-        .ornament-info .gift-text {
-            font-size: 12px;
-            color: #9ca3af;
-            text-align: center;
-            margin-top: 5px;
-        }
-
-        /* 地面裝飾 */
-        .ground {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 60px;
-            background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.1) 100%);
-            z-index: 2;
+                0 8px 25px rgba(255, 215, 0, 0.5),
+                inset 0 -10px 20px rgba(0,0,0,0.2),
+                inset 0 10px 20px rgba(255,255,255,0.3);
         }
 
         /* 禮物盒裝飾 */
         .gifts {
             position: absolute;
-            bottom: 20px;
+            bottom: 25px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 30px;
-            z-index: 3;
+            gap: 40px;
+            z-index: 10;
         }
 
         .gift-box {
-            font-size: 50px;
+            font-size: 45px;
             animation: giftBounce 2s ease-in-out infinite;
         }
 
         .gift-box:nth-child(2) { animation-delay: -0.5s; }
         .gift-box:nth-child(3) { animation-delay: -1s; }
         .gift-box:nth-child(4) { animation-delay: -1.5s; }
+        .gift-box:nth-child(5) { animation-delay: -0.3s; }
 
         @keyframes giftBounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-8px); }
         }
 
         /* 提示文字 */
         .hint {
             position: absolute;
-            bottom: 100px;
+            bottom: 85px;
             left: 50%;
             transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.7);
             font-size: 18px;
             z-index: 10;
             text-align: center;
         }
 
+        /* ==================== Modal 彈窗 ==================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+
+        /* Modal 中的大球 */
+        .modal-ball {
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fff8dc, var(--ball-gold) 40%, var(--ball-gold-dark) 100%);
+            border: 8px solid #b8860b;
+            box-shadow: 
+                0 10px 50px rgba(255, 215, 0, 0.6),
+                inset 0 -30px 60px rgba(0,0,0,0.2),
+                inset 0 30px 60px rgba(255,255,255,0.3);
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 球頂掛鉤（大） */
+        .modal-ball::before {
+            content: '';
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 25px;
+            background: linear-gradient(180deg, #c0c0c0 0%, #808080 100%);
+            border-radius: 5px 5px 0 0;
+            z-index: 5;
+        }
+
+        .modal-ball::after {
+            content: '';
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 25px;
+            border: 6px solid #808080;
+            border-bottom: none;
+            border-radius: 25px 25px 0 0;
+            background: transparent;
+            z-index: 5;
+        }
+
+        .modal-ball-inner {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .modal-half {
+            width: 50%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-half.left {
+            background: linear-gradient(135deg, rgba(255,107,107,0.9) 0%, rgba(196,30,58,0.9) 100%);
+        }
+
+        .modal-half.right {
+            background: linear-gradient(135deg, rgba(22,91,51,0.9) 0%, rgba(13,90,46,0.9) 100%);
+        }
+
+        .modal-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid white;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin-bottom: 15px;
+        }
+
+        .modal-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-avatar .placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            color: white;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .modal-name {
+            color: white;
+            font-size: 26px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .modal-role {
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .modal-divider {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 100%;
+            background: var(--christmas-gold);
+            z-index: 10;
+        }
+
+        /* Modal 下方文字 */
+        .modal-info {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .modal-info .gift-flow {
+            font-size: 32px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .modal-info .drawer-name {
+            color: #ff6b6b;
+        }
+
+        .modal-info .arrow {
+            color: var(--christmas-gold);
+            font-size: 40px;
+        }
+
+        .modal-info .winner-name {
+            color: #4ade80;
+        }
+
+        .modal-info .description {
+            color: rgba(255,255,255,0.7);
+            font-size: 22px;
+            margin-top: 15px;
+        }
+
+        /* 關閉提示 */
+        .modal-close-hint {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.5);
+            font-size: 16px;
+        }
+
         /* 返回按鈕 */
         .back-btn {
             position: fixed;
-            top: 30px;
-            left: 30px;
+            top: 25px;
+            left: 25px;
             padding: 12px 24px;
             background: var(--christmas-red);
             color: white;
@@ -395,7 +449,7 @@
             border-radius: 25px;
             font-size: 16px;
             cursor: pointer;
-            z-index: 1000;
+            z-index: 100;
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(196, 30, 58, 0.4);
         }
@@ -417,24 +471,69 @@
             <p class="subtitle">Merry Christmas 2024</p>
         </header>
 
-        <!-- 聖誕樹容器 -->
-        <div class="tree-container">
-            <!-- 聖誕樹 -->
-            <div class="christmas-tree">
-                <div class="tree-star">⭐</div>
-                <div class="tree-layer tree-layer-1"></div>
-                <div class="tree-trunk"></div>
+        <!-- 聖誕樹區域 -->
+        <div class="tree-section">
+            <!-- 聖誕樹 SVG -->
+            <svg class="christmas-tree-svg" width="800" height="850" viewBox="0 0 800 850">
+                <!-- 樹的陰影 -->
+                <ellipse cx="400" cy="820" rx="200" ry="25" fill="rgba(0,0,0,0.3)"/>
+                
+                <!-- 樹幹 -->
+                <rect x="360" y="720" width="80" height="100" fill="#8B4513"/>
+                <rect x="365" y="720" width="20" height="100" fill="#A0522D"/>
+                
+                <!-- 樹層 - 最下層 -->
+                <polygon points="400,100 100,720 700,720" fill="#228B22"/>
+                <polygon points="400,100 120,720 400,720" fill="#1a6b1a"/>
+                
+                <!-- 樹的紋理線條 -->
+                <line x1="400" y1="150" x2="150" y2="650" stroke="#1a5a1a" stroke-width="2" opacity="0.3"/>
+                <line x1="400" y1="150" x2="650" y2="650" stroke="#2a7a2a" stroke-width="2" opacity="0.3"/>
+                <line x1="400" y1="250" x2="200" y2="650" stroke="#1a5a1a" stroke-width="2" opacity="0.3"/>
+                <line x1="400" y1="250" x2="600" y2="650" stroke="#2a7a2a" stroke-width="2" opacity="0.3"/>
+            </svg>
+
+            <!-- 樹頂星星 -->
+            <div class="tree-star">⭐</div>
+
+            <!-- 裝飾球網格 -->
+            <div class="ornaments-grid" id="ornamentsGrid">
+                <!-- 第1排：2顆 -->
+                <div class="ornament-row" style="margin-top: 60px;">
+                    <div class="ornament" data-index="0"><div class="highlight"></div></div>
+                    <div class="ornament" data-index="1"><div class="highlight"></div></div>
+                </div>
+                <!-- 第2排：3顆 -->
+                <div class="ornament-row">
+                    <div class="ornament" data-index="2"><div class="highlight"></div></div>
+                    <div class="ornament" data-index="3"><div class="highlight"></div></div>
+                    <div class="ornament" data-index="4"><div class="highlight"></div></div>
+                </div>
+                <!-- 第3排：3顆 -->
+                <div class="ornament-row">
+                    <div class="ornament" data-index="5"><div class="highlight"></div></div>
+                    <div class="ornament" data-index="6"><div class="highlight"></div></div>
+                    <div class="ornament" data-index="7"><div class="highlight"></div></div>
+                </div>
+                <!-- 第4排：4顆 -->
+                <div class="ornament-row">
+                    <div class="ornament" data-index="8"><div class="highlight"></div></div>
+                    <div class="ornament" data-index="9"><div class="highlight"></div></div>
+                    <div class="ornament" data-index="10"><div class="highlight"></div></div>
+                    <div class="ornament" data-index="11"><div class="highlight"></div></div>
+                </div>
+                <!-- 第5排：4顆 -->
+                <div class="ornament-row">
+                    <div class="ornament" data-index="12"><div class="highlight"></div></div>
+                    <div class="ornament" data-index="13"><div class="highlight"></div></div>
+                    <div class="ornament" data-index="14"><div class="highlight"></div></div>
+                    <div class="ornament" data-index="15"><div class="highlight"></div></div>
+                </div>
             </div>
-
-            <!-- 彩燈 -->
-            <div class="tree-lights" id="treeLights"></div>
-
-            <!-- 裝飾球 -->
-            <div class="ornaments-container" id="ornamentsContainer"></div>
         </div>
 
-        <!-- 地面 -->
-        <div class="ground"></div>
+        <!-- 提示文字 -->
+        <div class="hint">✨ 點擊聖誕球查看抽獎結果 ✨</div>
 
         <!-- 禮物盒 -->
         <div class="gifts">
@@ -445,16 +544,46 @@
             <div class="gift-box">🎁</div>
         </div>
 
-        <!-- 提示文字 -->
-        <div class="hint">✨ 滑鼠移到裝飾球上查看抽獎結果 ✨</div>
+        <!-- Modal 彈窗 -->
+        <div class="modal-overlay" id="modalOverlay">
+            <div class="modal-content">
+                <div class="modal-ball">
+                    <div class="modal-ball-inner">
+                        <div class="modal-half left">
+                            <div class="modal-avatar" id="modalDrawerAvatar">
+                                <div class="placeholder">?</div>
+                            </div>
+                            <div class="modal-name" id="modalDrawerName">抽獎者</div>
+                            <div class="modal-role">抽獎者</div>
+                        </div>
+                        <div class="modal-half right">
+                            <div class="modal-avatar" id="modalWinnerAvatar">
+                                <div class="placeholder">?</div>
+                            </div>
+                            <div class="modal-name" id="modalWinnerName">被抽中</div>
+                            <div class="modal-role">禮物來源</div>
+                        </div>
+                        <div class="modal-divider"></div>
+                    </div>
+                </div>
+                <div class="modal-info">
+                    <div class="gift-flow">
+                        <span class="drawer-name" id="modalFlowDrawer">A</span>
+                        <span class="arrow">→</span>
+                        <span class="winner-name" id="modalFlowWinner">B</span>
+                    </div>
+                    <div class="description" id="modalDescription">A 獲得 B 的禮物</div>
+                </div>
+            </div>
+            <div class="modal-close-hint">點擊任意處關閉</div>
+        </div>
     </div>
 
-    <!-- 返回按鈕（測試用） -->
+    <!-- 返回按鈕 -->
     <button class="back-btn" onclick="history.back()">← 返回</button>
 
     <script>
         // ==================== 模擬資料 ====================
-        // 這些資料之後會從 index.html 傳過來
         const mockHistory = [
             { drawer: { name: '小明', avatar: '' }, winner: { name: '小華', avatar: '' } },
             { drawer: { name: '小華', avatar: '' }, winner: { name: '阿強', avatar: '' } },
@@ -471,12 +600,21 @@
             { drawer: { name: '建宏', avatar: '' }, winner: { name: '雅婷', avatar: '' } },
             { drawer: { name: '雅婷', avatar: '' }, winner: { name: '王饅頭', avatar: '' } },
             { drawer: { name: '王饅頭', avatar: '' }, winner: { name: '小榛果', avatar: '' } },
-            { drawer: { name: '小榛果', avatar: '' }, winner: { name: '小明', avatar: '' } }, // 閉環
+            { drawer: { name: '小榛果', avatar: '' }, winner: { name: '小明', avatar: '' } },
         ];
 
-        // 嘗試從 URL 參數或 localStorage 取得真實資料
+        // 洗牌函數（Fisher-Yates）
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // 取得歷史資料
         function getHistoryData() {
-            // 先檢查 localStorage
             const stored = localStorage.getItem('giftExchangeHistory');
             if (stored) {
                 try {
@@ -488,151 +626,7 @@
             return mockHistory;
         }
 
-        // ==================== 初始化 ====================
-        function init() {
-            createSnowflakes();
-            createTreeLights();
-            createOrnaments();
-        }
-
-        // ==================== 雪花效果 ====================
-        function createSnowflakes() {
-            const container = document.getElementById('snowflakes');
-            const snowflakeChars = ['❄', '❅', '❆', '✻', '✼'];
-            
-            for (let i = 0; i < 60; i++) {
-                const snowflake = document.createElement('div');
-                snowflake.className = 'snowflake';
-                snowflake.innerHTML = snowflakeChars[Math.floor(Math.random() * snowflakeChars.length)];
-                snowflake.style.left = Math.random() * 100 + '%';
-                snowflake.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                snowflake.style.animationDelay = -(Math.random() * 20) + 's';
-                snowflake.style.fontSize = (Math.random() * 1.5 + 0.5) + 'em';
-                container.appendChild(snowflake);
-            }
-        }
-
-        // ==================== 彩燈效果 ====================
-        function createTreeLights() {
-            const container = document.getElementById('treeLights');
-            const colors = ['#ff0000', '#00ff00', '#ffff00', '#ff00ff', '#00ffff', '#ff8800'];
-            
-            // 在樹的範圍內隨機放置彩燈
-            for (let i = 0; i < 40; i++) {
-                const light = document.createElement('div');
-                light.className = 'light';
-                
-                // 計算在三角形樹內的位置
-                const progress = Math.random();
-                const y = 120 + progress * 550;
-                const maxWidth = progress * 380;
-                const x = 500 + (Math.random() - 0.5) * maxWidth * 2;
-                
-                light.style.left = x + 'px';
-                light.style.top = y + 'px';
-                light.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                light.style.animationDelay = (Math.random() * 2) + 's';
-                light.style.boxShadow = `0 0 10px ${light.style.backgroundColor}`;
-                
-                container.appendChild(light);
-            }
-        }
-
-        // ==================== 裝飾球 ====================
-        function createOrnaments() {
-            const container = document.getElementById('ornamentsContainer');
-            const history = getHistoryData();
-            
-            // 預先定義 16 個裝飾球的位置（在聖誕樹範圍內）
-            const positions = generateOrnamentPositions(history.length);
-            
-            history.forEach((item, index) => {
-                const pos = positions[index];
-                const ornament = createOrnament(item, pos);
-                container.appendChild(ornament);
-            });
-        }
-
-        function generateOrnamentPositions(count) {
-            const positions = [];
-            const usedAreas = [];
-            
-            // 定義樹的區域（三角形）
-            const treeTop = 140;
-            const treeBottom = 680;
-            const treeCenterX = 500;
-            
-            for (let i = 0; i < count; i++) {
-                let attempts = 0;
-                let pos;
-                
-                do {
-                    // 隨機 Y 位置
-                    const y = treeTop + Math.random() * (treeBottom - treeTop);
-                    
-                    // 根據 Y 計算可用的 X 範圍（三角形）
-                    const progress = (y - treeTop) / (treeBottom - treeTop);
-                    const maxOffset = progress * 340;
-                    const x = treeCenterX + (Math.random() - 0.5) * maxOffset * 2;
-                    
-                    pos = { x, y };
-                    attempts++;
-                    
-                    // 檢查是否與其他球重疊
-                    const tooClose = usedAreas.some(used => {
-                        const dist = Math.sqrt(Math.pow(pos.x - used.x, 2) + Math.pow(pos.y - used.y, 2));
-                        return dist < 100;
-                    });
-                    
-                    if (!tooClose || attempts > 50) {
-                        usedAreas.push(pos);
-                        break;
-                    }
-                } while (attempts < 50);
-                
-                positions.push(pos);
-            }
-            
-            return positions;
-        }
-
-        function createOrnament(item, pos) {
-            const ornament = document.createElement('div');
-            ornament.className = 'ornament';
-            ornament.style.left = (pos.x - 45) + 'px';
-            ornament.style.top = (pos.y - 45) + 'px';
-            
-            // 隨機輕微旋轉和動畫延遲
-            const rotation = (Math.random() - 0.5) * 10;
-            ornament.style.transform = `rotate(${rotation}deg)`;
-            
-            // 生成頭像或佔位符
-            const drawerAvatar = item.drawer.avatar || generatePlaceholderAvatar(item.drawer.name);
-            const winnerAvatar = item.winner.avatar || generatePlaceholderAvatar(item.winner.name);
-            
-            ornament.innerHTML = `
-                <div class="ornament-inner">
-                    <div class="ornament-half left">
-                        <img src="${drawerAvatar}" alt="${item.drawer.name}" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\\"font-size:24px;color:white;\\">${item.drawer.name.charAt(0)}</span>'">
-                    </div>
-                    <div class="ornament-half right">
-                        <img src="${winnerAvatar}" alt="${item.winner.name}" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\\"font-size:24px;color:white;\\">${item.winner.name.charAt(0)}</span>'">
-                    </div>
-                    <div class="ornament-divider"></div>
-                </div>
-                <div class="ornament-info">
-                    <div class="names">
-                        <span class="drawer-name">${item.drawer.name}</span>
-                        <span class="arrow">→</span>
-                        <span class="winner-name">${item.winner.name}</span>
-                    </div>
-                    <div class="gift-text">${item.drawer.name} 獲得 ${item.winner.name} 的禮物</div>
-                </div>
-            `;
-            
-            return ornament;
-        }
-
+        // 生成佔位頭像
         function generatePlaceholderAvatar(name) {
             const colors = [
                 '#c41e3a', '#165b33', '#4a90d9', '#9b59b6', '#e67e22',
@@ -649,7 +643,85 @@
             `)}`;
         }
 
-        // ==================== 啟動 ====================
+        // ==================== 初始化 ====================
+        let historyData = [];
+        let shuffledData = [];
+
+        function init() {
+            createSnowflakes();
+            
+            historyData = getHistoryData();
+            // 隨機打亂組合順序
+            shuffledData = shuffleArray(historyData);
+            
+            bindOrnamentEvents();
+        }
+
+        // 雪花效果
+        function createSnowflakes() {
+            const container = document.getElementById('snowflakes');
+            const snowflakeChars = ['❄', '❅', '❆', '✻', '✼'];
+            
+            for (let i = 0; i < 60; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.innerHTML = snowflakeChars[Math.floor(Math.random() * snowflakeChars.length)];
+                snowflake.style.left = Math.random() * 100 + '%';
+                snowflake.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                snowflake.style.animationDelay = -(Math.random() * 20) + 's';
+                snowflake.style.fontSize = (Math.random() * 1.5 + 0.5) + 'em';
+                container.appendChild(snowflake);
+            }
+        }
+
+        // 綁定球的點擊事件
+        function bindOrnamentEvents() {
+            const ornaments = document.querySelectorAll('.ornament');
+            
+            ornaments.forEach((ornament, index) => {
+                if (index < shuffledData.length) {
+                    ornament.addEventListener('click', () => {
+                        showModal(shuffledData[index]);
+                    });
+                } else {
+                    // 如果球數多於資料，隱藏多餘的球
+                    ornament.style.display = 'none';
+                }
+            });
+        }
+
+        // 顯示 Modal
+        function showModal(item) {
+            const modal = document.getElementById('modalOverlay');
+            
+            // 設定抽獎者資訊
+            const drawerAvatar = item.drawer.avatar || generatePlaceholderAvatar(item.drawer.name);
+            document.getElementById('modalDrawerAvatar').innerHTML = 
+                `<img src="${drawerAvatar}" alt="${item.drawer.name}" onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'>${item.drawer.name.charAt(0)}</div>'">`;
+            document.getElementById('modalDrawerName').textContent = item.drawer.name;
+            
+            // 設定被抽中者資訊
+            const winnerAvatar = item.winner.avatar || generatePlaceholderAvatar(item.winner.name);
+            document.getElementById('modalWinnerAvatar').innerHTML = 
+                `<img src="${winnerAvatar}" alt="${item.winner.name}" onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'>${item.winner.name.charAt(0)}</div>'">`;
+            document.getElementById('modalWinnerName').textContent = item.winner.name;
+            
+            // 設定下方文字
+            document.getElementById('modalFlowDrawer').textContent = item.drawer.name;
+            document.getElementById('modalFlowWinner').textContent = item.winner.name;
+            document.getElementById('modalDescription').textContent = 
+                `${item.drawer.name} 獲得 ${item.winner.name} 的禮物`;
+            
+            modal.classList.add('show');
+        }
+
+        // 關閉 Modal
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            // 點擊任意處關閉
+            this.classList.remove('show');
+        });
+
+        // 初始化
         init();
     </script>
 </body>
