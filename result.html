@@ -155,6 +155,20 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
+        /* 未分配的球（不可點擊） */
+        .ornament.empty {
+            cursor: default;
+            opacity: 0.7;
+        }
+
+        .ornament.empty:hover {
+            transform: none;
+            box-shadow: 
+                0 4px 15px rgba(0,0,0,0.4),
+                inset 0 -10px 20px rgba(0,0,0,0.2),
+                inset 0 10px 20px rgba(255,255,255,0.3);
+        }
+
         /* 球頂掛鉤 */
         .ornament::before {
             content: '';
@@ -242,6 +256,47 @@
             display: flex;
             gap: 40px;
             z-index: 10;
+        }
+
+        /* 額外的球（超過16組時顯示在樹幹附近） */
+        .extra-ornaments {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            max-width: 500px;
+            z-index: 15;
+        }
+
+        .extra-ornaments .ornament {
+            width: 60px;
+            height: 60px;
+        }
+
+        .extra-ornaments .ornament::before {
+            top: -10px;
+            width: 12px;
+            height: 10px;
+        }
+
+        .extra-ornaments .ornament::after {
+            top: -16px;
+            width: 16px;
+            height: 10px;
+            border-width: 2px;
+        }
+
+        .extra-ornaments .ball-avatar {
+            width: 40px;
+            height: 40px;
+        }
+
+        .extra-ornaments .ball-avatar .placeholder {
+            font-size: 16px;
         }
 
         .gift-box {
@@ -567,6 +622,9 @@
         <!-- 提示文字 -->
         <div class="hint">✨ 點擊聖誕球查看抽獎結果 ✨</div>
 
+        <!-- 額外的球（超過16組時使用） -->
+        <div class="extra-ornaments" id="extraOrnaments"></div>
+
         <!-- 禮物盒 -->
         <div class="gifts">
             <div class="gift-box">🎁</div>
@@ -678,6 +736,7 @@
         // ==================== 初始化 ====================
         let historyData = [];
         let shuffledData = [];
+        const MAX_TREE_BALLS = 16;
 
         function init() {
             createSnowflakes();
@@ -687,6 +746,7 @@
             shuffledData = shuffleArray(historyData);
             
             bindOrnamentEvents();
+            createExtraOrnaments();
         }
 
         // 雪花效果
@@ -706,12 +766,13 @@
             }
         }
 
-        // 綁定球的點擊事件並設定頭像
+        // 綁定樹上的球（最多16顆）
         function bindOrnamentEvents() {
-            const ornaments = document.querySelectorAll('.ornament');
+            const ornaments = document.querySelectorAll('.ornaments-grid .ornament');
             
             ornaments.forEach((ornament, index) => {
-                if (index < shuffledData.length) {
+                if (index < shuffledData.length && index < MAX_TREE_BALLS) {
+                    // 有分配到組合的球
                     const item = shuffledData[index];
                     
                     // 設定球中間的被抽中者頭像
@@ -720,7 +781,7 @@
                     ballAvatar.innerHTML = `<img src="${winnerAvatar}" alt="${item.winner.name}" onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'>${item.winner.name.charAt(0)}</div>'">`;
                     
                     // 隨機旋轉角度 (-45 ~ 45 度)
-                    const randomRotation = (Math.random() - 0.5) * 90; // -45 到 +45
+                    const randomRotation = (Math.random() - 0.5) * 90;
                     ballAvatar.style.transform = `translate(-50%, -50%) rotate(${randomRotation}deg)`;
                     
                     // 點擊事件
@@ -728,9 +789,42 @@
                         showModal(item);
                     });
                 } else {
-                    // 如果球數多於資料，隱藏多餘的球
-                    ornament.style.display = 'none';
+                    // 多餘的球（沒有分配到組合）- 保持金色但不可點擊
+                    ornament.classList.add('empty');
+                    const ballAvatar = ornament.querySelector('.ball-avatar');
+                    if (ballAvatar) {
+                        ballAvatar.style.display = 'none';
+                    }
                 }
+            });
+        }
+
+        // 創建額外的球（超過16組時）
+        function createExtraOrnaments() {
+            if (shuffledData.length <= MAX_TREE_BALLS) return;
+            
+            const extraContainer = document.getElementById('extraOrnaments');
+            const extraItems = shuffledData.slice(MAX_TREE_BALLS);
+            
+            extraItems.forEach((item, index) => {
+                const ornament = document.createElement('div');
+                ornament.className = 'ornament';
+                
+                const winnerAvatar = item.winner.avatar || generatePlaceholderAvatar(item.winner.name);
+                const randomRotation = (Math.random() - 0.5) * 90;
+                
+                ornament.innerHTML = `
+                    <div class="highlight"></div>
+                    <div class="ball-avatar" style="transform: translate(-50%, -50%) rotate(${randomRotation}deg)">
+                        <img src="${winnerAvatar}" alt="${item.winner.name}" onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'>${item.winner.name.charAt(0)}</div>'">
+                    </div>
+                `;
+                
+                ornament.addEventListener('click', () => {
+                    showModal(item);
+                });
+                
+                extraContainer.appendChild(ornament);
             });
         }
 
