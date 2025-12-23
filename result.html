@@ -719,6 +719,10 @@
                     const winnerAvatar = item.winner.avatar || generatePlaceholderAvatar(item.winner.name);
                     ballAvatar.innerHTML = `<img src="${winnerAvatar}" alt="${item.winner.name}" onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'>${item.winner.name.charAt(0)}</div>'">`;
                     
+                    // 隨機旋轉角度 (-45 ~ 45 度)
+                    const randomRotation = (Math.random() - 0.5) * 90; // -45 到 +45
+                    ballAvatar.style.transform = `translate(-50%, -50%) rotate(${randomRotation}deg)`;
+                    
                     // 點擊事件
                     ornament.addEventListener('click', () => {
                         showModal(item);
