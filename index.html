@@ -148,14 +148,27 @@
             }
 
             @keyframes popIn {
-                0% { transform: scale(0); opacity: 0; }
-                50% { transform: scale(1.2); }
-                100% { transform: scale(1); opacity: 1; }
+                0% {
+                    transform: scale(0);
+                    opacity: 0;
+                }
+                50% {
+                    transform: scale(1.2);
+                }
+                100% {
+                    transform: scale(1);
+                    opacity: 1;
+                }
             }
 
             @keyframes float {
-                0%, 100% { transform: translateY(0); }
-                50% { transform: translateY(-10px); }
+                0%,
+                100% {
+                    transform: translateY(0);
+                }
+                50% {
+                    transform: translateY(-10px);
+                }
             }
 
             .ball-avatar {
@@ -273,7 +286,9 @@
             }
 
             @keyframes rotate {
-                100% { transform: rotate(360deg); }
+                100% {
+                    transform: rotate(360deg);
+                }
             }
 
             .lottery-avatar {
@@ -363,8 +378,12 @@
             }
 
             @keyframes shine {
-                0% { left: -50%; }
-                100% { left: 150%; }
+                0% {
+                    left: -50%;
+                }
+                100% {
+                    left: 150%;
+                }
             }
 
             .rolling .lottery-avatar {
@@ -376,14 +395,26 @@
             }
 
             @keyframes shake {
-                0%, 100% { transform: translateX(0); }
-                25% { transform: translateX(-5px); }
-                75% { transform: translateX(5px); }
+                0%,
+                100% {
+                    transform: translateX(0);
+                }
+                25% {
+                    transform: translateX(-5px);
+                }
+                75% {
+                    transform: translateX(5px);
+                }
             }
 
             @keyframes blink {
-                0%, 100% { opacity: 1; }
-                50% { opacity: 0.5; }
+                0%,
+                100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.5;
+                }
             }
 
             .winner .lottery-display {
@@ -393,8 +424,13 @@
             }
 
             @keyframes celebrate {
-                0%, 100% { transform: scale(1); }
-                50% { transform: scale(1.02); }
+                0%,
+                100% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.02);
+                }
             }
 
             .winner .lottery-avatar {
@@ -402,8 +438,13 @@
             }
 
             @keyframes bounce {
-                0%, 100% { transform: scale(1); }
-                50% { transform: scale(1.1); }
+                0%,
+                100% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.1);
+                }
             }
 
             .control-panel {
@@ -427,7 +468,6 @@
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                padding: 15px 20px;
                 cursor: pointer;
                 user-select: none;
             }
@@ -503,7 +543,6 @@
                 display: block;
                 width: 100%;
                 padding: 10px;
-                margin: 8px 0;
                 background: var(--christmas-green);
                 color: white;
                 border: none;
@@ -613,7 +652,8 @@
                 padding: 10px;
             }
 
-            .qr-code img, .qr-code canvas {
+            .qr-code img,
+            .qr-code canvas {
                 max-width: 100%;
                 max-height: 100%;
             }
@@ -762,7 +802,7 @@
         <div class="control-panel" id="controlPanel">
             <div class="control-panel-header" onclick="toggleControlPanel()">
                 <h3>🛠️ 主持人控制台</h3>
-                <button class="toggle-btn" title="收合/展開">◀</button>
+                <button class="toggle-btn" style="padding: 0" title="收合/展開">◀</button>
             </div>
             <div class="control-panel-content">
                 <div class="status" id="firebaseStatus">⏳ 連線中...</div>
@@ -787,8 +827,8 @@
 
         <script>
             // ==================== 🎯 暗樁設定區 ====================
-            const RIGGED_DRAWER_NAMES = ['榛', '棒', 'Diane', '恐龍'];
-            const RIGGED_WINNER_NAME = '王饅頭';
+            const RIGGED_DRAWER_NAMES = ['榛', '棒', 'Diane', '恐龍']
+            const RIGGED_WINNER_NAME = '王饅頭'
 
             // ==================== Firebase 設定 ====================
             const firebaseConfig = {
@@ -800,10 +840,10 @@
                 messagingSenderId: '435810354824',
                 appId: '1:435810354824:web:879aded64a1a01a733813d',
                 measurementId: 'G-V6CW8BFWV6',
-            };
+            }
 
-            firebase.initializeApp(firebaseConfig);
-            const database = firebase.database();
+            firebase.initializeApp(firebaseConfig)
+            const database = firebase.database()
 
             let gameState = {
                 participants: [],
@@ -814,33 +854,34 @@
                 drawnIds: [],
                 isRolling: false,
                 isComplete: false,
-            };
+            }
 
             function init() {
-                createSnowflakes();
-                generateQRCode();
-                listenToParticipants();
-                listenToGameState();
+                createSnowflakes()
+                generateQRCode()
+                listenToParticipants()
+                listenToGameState()
 
                 database.ref('.info/connected').on('value', (snap) => {
-                    const statusEl = document.getElementById('firebaseStatus');
+                    const statusEl = document.getElementById('firebaseStatus')
                     if (snap.val() === true) {
-                        statusEl.textContent = '✅ Firebase 已連線';
-                        statusEl.className = 'status connected';
+                        statusEl.textContent = '✅ Firebase 已連線'
+                        statusEl.className = 'status connected'
                     } else {
-                        statusEl.textContent = '❌ Firebase 已斷線';
-                        statusEl.className = 'status disconnected';
+                        statusEl.textContent = '❌ Firebase 已斷線'
+                        statusEl.className = 'status disconnected'
                     }
-                });
+                })
             }
 
             function generateQRCode() {
-                const currentUrl = window.location.href;
-                const joinUrl = currentUrl.replace(/index\.html.*$/, 'join.html').replace(/\/$/, '/join.html');
-                document.getElementById('joinUrl').textContent = joinUrl.length > 30 ? joinUrl.substring(0, 30) + '...' : joinUrl;
+                const currentUrl = window.location.href
+                const joinUrl = currentUrl.replace(/index\.html.*$/, 'join.html').replace(/\/$/, '/join.html')
+                document.getElementById('joinUrl').textContent =
+                    joinUrl.length > 30 ? joinUrl.substring(0, 30) + '...' : joinUrl
 
-                const qrContainer = document.getElementById('qrCode');
-                qrContainer.innerHTML = '';
+                const qrContainer = document.getElementById('qrCode')
+                qrContainer.innerHTML = ''
 
                 try {
                     new QRCode(qrContainer, {
@@ -850,237 +891,249 @@
                         colorDark: '#165b33',
                         colorLight: '#ffffff',
                         correctLevel: QRCode.CorrectLevel.M,
-                    });
+                    })
                 } catch (error) {
-                    console.error('QR Code 生成失敗:', error);
-                    qrContainer.innerHTML = '<span style="color: #666; font-size: 10px;">QR 生成失敗</span>';
+                    console.error('QR Code 生成失敗:', error)
+                    qrContainer.innerHTML = '<span style="color: #666; font-size: 10px;">QR 生成失敗</span>'
                 }
             }
 
             function listenToParticipants() {
                 database.ref('participants').on('value', (snapshot) => {
-                    const data = snapshot.val();
+                    const data = snapshot.val()
                     if (data) {
-                        const newParticipants = Object.values(data);
-                        const existingIds = gameState.participants.map((p) => p.id);
-                        const newJoins = newParticipants.filter((p) => !existingIds.includes(p.id));
+                        const newParticipants = Object.values(data)
+                        const existingIds = gameState.participants.map((p) => p.id)
+                        const newJoins = newParticipants.filter((p) => !existingIds.includes(p.id))
 
-                        gameState.participants = newParticipants;
-                        updatePoolFromParticipants();
-                        renderPool(newJoins.map((p) => p.id));
-                        updatePoolCount();
-                        updateFirstDrawerSelect();
+                        gameState.participants = newParticipants
+                        updatePoolFromParticipants()
+                        renderPool(newJoins.map((p) => p.id))
+                        updatePoolCount()
+                        updateFirstDrawerSelect()
                     } else {
-                        gameState.participants = [];
-                        gameState.pool = [];
-                        renderPool([]);
-                        updatePoolCount();
-                        updateFirstDrawerSelect();
+                        gameState.participants = []
+                        gameState.pool = []
+                        renderPool([])
+                        updatePoolCount()
+                        updateFirstDrawerSelect()
                     }
-                });
+                })
             }
 
             function listenToGameState() {
                 database.ref('gameState').on('value', (snapshot) => {
-                    const data = snapshot.val();
+                    const data = snapshot.val()
                     if (data) {
                         if (data.currentDrawer) {
-                            gameState.currentDrawer = data.currentDrawer;
-                            updateCurrentDrawer();
-                            document.getElementById('lotteryBtn').disabled = false;
+                            gameState.currentDrawer = data.currentDrawer
+                            updateCurrentDrawer()
+                            document.getElementById('lotteryBtn').disabled = false
                         }
                         if (data.firstDrawer) {
-                            gameState.firstDrawer = data.firstDrawer;
+                            gameState.firstDrawer = data.firstDrawer
                         }
                         if (data.drawnIds) {
-                            gameState.drawnIds = data.drawnIds;
-                            updatePoolFromParticipants();
-                            renderPool([]);
-                            updatePoolCount();
+                            gameState.drawnIds = data.drawnIds
+                            updatePoolFromParticipants()
+                            renderPool([])
+                            updatePoolCount()
                         }
                         if (data.history) {
-                            gameState.history = data.history;
-                            updateHistory();
+                            gameState.history = data.history
+                            updateHistory()
                         }
                     }
-                });
+                })
             }
 
             function updatePoolFromParticipants() {
-                const drawnIds = gameState.drawnIds || [];
-                gameState.pool = gameState.participants.filter((p) => !drawnIds.includes(p.id));
+                const drawnIds = gameState.drawnIds || []
+                gameState.pool = gameState.participants.filter((p) => !drawnIds.includes(p.id))
             }
 
             function renderPool(newJoinIds = []) {
-                const poolEl = document.getElementById('ballPool');
+                const poolEl = document.getElementById('ballPool')
 
                 if (gameState.pool.length === 0 && gameState.participants.length === 0) {
-                    poolEl.innerHTML = `<div class="waiting-message"><h2>等待參加者加入...</h2><p>請掃描左下角 QR Code 加入抽獎</p></div>`;
-                    return;
+                    poolEl.innerHTML = `<div class="waiting-message"><h2>等待參加者加入...</h2><p>請掃描左下角 QR Code 加入抽獎</p></div>`
+                    return
                 }
 
                 if (gameState.pool.length === 0) {
-                    poolEl.innerHTML = `<div class="waiting-message"><h2>球池已清空</h2><p>抽獎完成！</p></div>`;
-                    return;
+                    poolEl.innerHTML = `<div class="waiting-message"><h2>球池已清空</h2><p>抽獎完成！</p></div>`
+                    return
                 }
 
-                poolEl.innerHTML = gameState.pool.map((p) => `
+                poolEl.innerHTML = gameState.pool
+                    .map(
+                        (p) => `
                     <div class="ball ${newJoinIds.includes(p.id) ? 'new-join' : ''}" data-id="${p.id}">
                         <div class="ball-avatar">
-                            <img src="${p.avatar}" alt="${p.name}" onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'>${p.name.charAt(0)}</div>'">
+                            <img src="${p.avatar}" alt="${
+                            p.name
+                        }" onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'>${p.name.charAt(
+                            0
+                        )}</div>'">
                         </div>
                         <div class="ball-name">${p.name}</div>
                     </div>
-                `).join('');
+                `
+                    )
+                    .join('')
             }
 
             function updatePoolCount() {
-                document.getElementById('poolCount').textContent = gameState.pool.length;
+                document.getElementById('poolCount').textContent = gameState.pool.length
             }
 
             function updateFirstDrawerSelect() {
-                const select = document.getElementById('firstDrawerSelect');
-                const currentValue = select.value;
+                const select = document.getElementById('firstDrawerSelect')
+                const currentValue = select.value
 
-                select.innerHTML = '<option value="">-- 請選擇 --</option>';
+                select.innerHTML = '<option value="">-- 請選擇 --</option>'
                 gameState.participants.forEach((p) => {
-                    const option = document.createElement('option');
-                    option.value = p.id;
-                    option.textContent = p.name;
-                    select.appendChild(option);
-                });
+                    const option = document.createElement('option')
+                    option.value = p.id
+                    option.textContent = p.name
+                    select.appendChild(option)
+                })
 
-                select.value = currentValue;
+                select.value = currentValue
             }
 
             function setFirstDrawer() {
-                const select = document.getElementById('firstDrawerSelect');
-                const selectedId = select.value;
+                const select = document.getElementById('firstDrawerSelect')
+                const selectedId = select.value
 
                 if (!selectedId) {
-                    alert('請選擇一位參加者！');
-                    return;
+                    alert('請選擇一位參加者！')
+                    return
                 }
 
-                const firstDrawer = gameState.participants.find((p) => p.id === selectedId);
-                if (!firstDrawer) return;
+                const firstDrawer = gameState.participants.find((p) => p.id === selectedId)
+                if (!firstDrawer) return
 
                 database.ref('gameState').update({
                     currentDrawer: firstDrawer,
                     firstDrawer: firstDrawer,
                     drawnIds: [firstDrawer.id],
-                });
+                })
 
-                gameState.currentDrawer = firstDrawer;
-                gameState.firstDrawer = firstDrawer;
-                gameState.drawnIds = [firstDrawer.id];
+                gameState.currentDrawer = firstDrawer
+                gameState.firstDrawer = firstDrawer
+                gameState.drawnIds = [firstDrawer.id]
 
-                updateCurrentDrawer();
-                updatePoolFromParticipants();
-                renderPool([]);
-                updatePoolCount();
+                updateCurrentDrawer()
+                updatePoolFromParticipants()
+                renderPool([])
+                updatePoolCount()
 
-                document.getElementById('lotteryBtn').disabled = false;
+                document.getElementById('lotteryBtn').disabled = false
             }
 
             function updateCurrentDrawer() {
-                const drawer = gameState.currentDrawer;
-                const avatarEl = document.getElementById('drawerAvatar');
-                const nameEl = document.getElementById('drawerName');
+                const drawer = gameState.currentDrawer
+                const avatarEl = document.getElementById('drawerAvatar')
+                const nameEl = document.getElementById('drawerName')
 
                 if (drawer) {
-                    avatarEl.innerHTML = `<img src="${drawer.avatar}" alt="${drawer.name}" onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'>${drawer.name.charAt(0)}</div>'">`;
-                    nameEl.textContent = drawer.name;
+                    avatarEl.innerHTML = `<img src="${drawer.avatar}" alt="${
+                        drawer.name
+                    }" onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'>${drawer.name.charAt(
+                        0
+                    )}</div>'">`
+                    nameEl.textContent = drawer.name
                 } else {
-                    avatarEl.innerHTML = '<div class="placeholder">?</div>';
-                    nameEl.textContent = '等待主持人指定';
+                    avatarEl.innerHTML = '<div class="placeholder">?</div>'
+                    nameEl.textContent = '等待主持人指定'
                 }
             }
 
             async function startLottery() {
-                if (gameState.isRolling || gameState.pool.length === 0) return;
+                if (gameState.isRolling || gameState.pool.length === 0) return
 
-                gameState.isRolling = true;
-                const btn = document.getElementById('lotteryBtn');
-                btn.disabled = true;
-                btn.textContent = '🎰 抽獎中...';
+                gameState.isRolling = true
+                const btn = document.getElementById('lotteryBtn')
+                btn.disabled = true
+                btn.textContent = '🎰 抽獎中...'
 
-                const display = document.getElementById('lotteryDisplay');
-                const avatarEl = document.getElementById('lotteryAvatar');
-                const nameEl = document.getElementById('lotteryName');
-                const statusEl = document.getElementById('lotteryStatus');
+                const display = document.getElementById('lotteryDisplay')
+                const avatarEl = document.getElementById('lotteryAvatar')
+                const nameEl = document.getElementById('lotteryName')
+                const statusEl = document.getElementById('lotteryStatus')
 
-                display.classList.add('rolling');
-                display.classList.remove('winner');
-                statusEl.textContent = '';
+                display.classList.add('rolling')
+                display.classList.remove('winner')
+                statusEl.textContent = ''
 
-                let winner;
-                const currentDrawerName = gameState.currentDrawer?.name || '';
-                const isRigged = RIGGED_DRAWER_NAMES.some((name) => currentDrawerName.includes(name));
-                const isLastPerson = gameState.pool.length === 1;
+                let winner
+                const currentDrawerName = gameState.currentDrawer?.name || ''
+                const isRigged = RIGGED_DRAWER_NAMES.some((name) => currentDrawerName.includes(name))
+                const isLastPerson = gameState.pool.length === 1
 
                 if (isLastPerson) {
-                    winner = gameState.pool[0];
-                    console.log('🔚 最後一人：', winner.name, '→ 將獲得', gameState.firstDrawer?.name, '的禮物');
+                    winner = gameState.pool[0]
+                    console.log('🔚 最後一人：', winner.name, '→ 將獲得', gameState.firstDrawer?.name, '的禮物')
                 } else if (isRigged && RIGGED_WINNER_NAME) {
-                    const riggedWinner = gameState.pool.find((p) => p.name === RIGGED_WINNER_NAME);
+                    const riggedWinner = gameState.pool.find((p) => p.name === RIGGED_WINNER_NAME)
                     if (riggedWinner) {
-                        winner = riggedWinner;
-                        console.log('🎯 暗樁觸發：', currentDrawerName, '→', RIGGED_WINNER_NAME);
+                        winner = riggedWinner
+                        console.log('🎯 暗樁觸發：', currentDrawerName, '→', RIGGED_WINNER_NAME)
                     } else {
-                        const winnerIndex = Math.floor(Math.random() * gameState.pool.length);
-                        winner = gameState.pool[winnerIndex];
-                        console.log('⚠️ 暗樁目標不在球池中，改為隨機');
+                        const winnerIndex = Math.floor(Math.random() * gameState.pool.length)
+                        winner = gameState.pool[winnerIndex]
+                        console.log('⚠️ 暗樁目標不在球池中，改為隨機')
                     }
                 } else {
-                    let availablePool = gameState.pool;
+                    let availablePool = gameState.pool
 
                     if (RIGGED_WINNER_NAME) {
-                        const filteredPool = gameState.pool.filter((p) => p.name !== RIGGED_WINNER_NAME);
+                        const filteredPool = gameState.pool.filter((p) => p.name !== RIGGED_WINNER_NAME)
                         if (filteredPool.length > 0) {
-                            availablePool = filteredPool;
-                            console.log('🛡️ 保護暗樁目標，從其餘', availablePool.length, '人中抽獎');
+                            availablePool = filteredPool
+                            console.log('🛡️ 保護暗樁目標，從其餘', availablePool.length, '人中抽獎')
                         }
                     }
 
-                    const winnerIndex = Math.floor(Math.random() * availablePool.length);
-                    winner = availablePool[winnerIndex];
+                    const winnerIndex = Math.floor(Math.random() * availablePool.length)
+                    winner = availablePool[winnerIndex]
                 }
 
-                const duration = 3000;
-                const startTime = Date.now();
+                const duration = 3000
+                const startTime = Date.now()
 
                 const animate = () => {
-                    const elapsed = Date.now() - startTime;
+                    const elapsed = Date.now() - startTime
 
                     if (elapsed < duration) {
-                        const randomPerson = gameState.pool[Math.floor(Math.random() * gameState.pool.length)];
-                        avatarEl.innerHTML = `<img src="${randomPerson.avatar}" alt="${randomPerson.name}">`;
-                        nameEl.textContent = randomPerson.name;
+                        const randomPerson = gameState.pool[Math.floor(Math.random() * gameState.pool.length)]
+                        avatarEl.innerHTML = `<img src="${randomPerson.avatar}" alt="${randomPerson.name}">`
+                        nameEl.textContent = randomPerson.name
 
-                        const speed = Math.min(50 + (elapsed / duration) * 150, 200);
-                        setTimeout(animate, speed);
+                        const speed = Math.min(50 + (elapsed / duration) * 150, 200)
+                        setTimeout(animate, speed)
                     } else {
-                        showWinner(winner, isLastPerson);
+                        showWinner(winner, isLastPerson)
                     }
-                };
+                }
 
-                animate();
+                animate()
             }
 
             function showWinner(winner, isLastPerson = false) {
-                const display = document.getElementById('lotteryDisplay');
-                const avatarEl = document.getElementById('lotteryAvatar');
-                const nameEl = document.getElementById('lotteryName');
-                const statusEl = document.getElementById('lotteryStatus');
-                const btn = document.getElementById('lotteryBtn');
+                const display = document.getElementById('lotteryDisplay')
+                const avatarEl = document.getElementById('lotteryAvatar')
+                const nameEl = document.getElementById('lotteryName')
+                const statusEl = document.getElementById('lotteryStatus')
+                const btn = document.getElementById('lotteryBtn')
 
-                display.classList.remove('rolling');
-                display.classList.add('winner');
+                display.classList.remove('rolling')
+                display.classList.add('winner')
 
-                avatarEl.innerHTML = `<img src="${winner.avatar}" alt="${winner.name}">`;
-                nameEl.textContent = winner.name;
-                statusEl.textContent = '🎊 恭喜中獎！🎊';
+                avatarEl.innerHTML = `<img src="${winner.avatar}" alt="${winner.name}">`
+                nameEl.textContent = winner.name
+                statusEl.textContent = '🎊 恭喜中獎！🎊'
 
                 const newHistory = [
                     ...(gameState.history || []),
@@ -1088,65 +1141,69 @@
                         drawer: gameState.currentDrawer,
                         winner: winner,
                     },
-                ];
+                ]
 
                 if (isLastPerson && gameState.firstDrawer) {
                     newHistory.push({
                         drawer: winner,
                         winner: gameState.firstDrawer,
-                    });
+                    })
                 }
 
-                const drawnIds = [...(gameState.drawnIds || []), winner.id];
+                const drawnIds = [...(gameState.drawnIds || []), winner.id]
 
                 database.ref('gameState').update({
                     currentDrawer: isLastPerson ? null : winner,
                     drawnIds: drawnIds,
                     history: newHistory,
-                });
+                })
 
-                gameState.history = newHistory;
-                gameState.currentDrawer = isLastPerson ? null : winner;
-                gameState.drawnIds = drawnIds;
+                gameState.history = newHistory
+                gameState.currentDrawer = isLastPerson ? null : winner
+                gameState.drawnIds = drawnIds
 
-                updateHistory();
-                updateCurrentDrawer();
-                updatePoolFromParticipants();
-                renderPool([]);
-                updatePoolCount();
+                updateHistory()
+                updateCurrentDrawer()
+                updatePoolFromParticipants()
+                renderPool([])
+                updatePoolCount()
 
-                gameState.isRolling = false;
+                gameState.isRolling = false
 
                 if (gameState.pool.length === 0) {
                     // 儲存抽獎結果到 localStorage
-                    localStorage.setItem('giftExchangeHistory', JSON.stringify(newHistory));
-                    
+                    localStorage.setItem('giftExchangeHistory', JSON.stringify(newHistory))
+
                     setTimeout(() => {
-                        gameState.isComplete = true;
-                        document.getElementById('completeOverlay').classList.add('show');
-                        
+                        gameState.isComplete = true
+                        document.getElementById('completeOverlay').classList.add('show')
+
                         // 3秒後跳轉到結果頁面
                         setTimeout(() => {
-                            window.location.href = 'result.html';
-                        }, 3000);
-                    }, 2000);
-                    btn.textContent = '🎉 抽獎完成';
-                    btn.disabled = true;
+                            window.location.href = 'result.html'
+                        }, 3000)
+                    }, 2000)
+                    btn.textContent = '🎉 抽獎完成'
+                    btn.disabled = true
                 } else {
-                    btn.textContent = '🎰 開始抽獎';
-                    btn.disabled = false;
+                    btn.textContent = '🎰 開始抽獎'
+                    btn.disabled = false
                 }
             }
 
             function updateHistory() {
-                const historySection = document.getElementById('historySection');
-                const historyList = document.getElementById('historyList');
+                const historySection = document.getElementById('historySection')
+                const historyList = document.getElementById('historyList')
 
                 if (gameState.history && gameState.history.length > 0) {
-                    historySection.style.display = 'block';
-                    historyList.innerHTML = gameState.history.map((h, i) => {
-                        const isClosingLoop = gameState.firstDrawer && h.winner.id === gameState.firstDrawer.id && i === gameState.history.length - 1;
-                        return `
+                    historySection.style.display = 'block'
+                    historyList.innerHTML = gameState.history
+                        .map((h, i) => {
+                            const isClosingLoop =
+                                gameState.firstDrawer &&
+                                h.winner.id === gameState.firstDrawer.id &&
+                                i === gameState.history.length - 1
+                            return `
                             <div class="history-item" ${isClosingLoop ? 'style="color: var(--christmas-gold);"' : ''}>
                                 <span>${i + 1}.</span>
                                 <span>${h.drawer.name}</span>
@@ -1154,34 +1211,44 @@
                                 <span>${h.winner.name}</span>
                                 ${isClosingLoop ? '<span>🔄</span>' : ''}
                             </div>
-                        `;
-                    }).join('');
+                        `
+                        })
+                        .join('')
                 }
             }
 
             function toggleControlPanel() {
-                const panel = document.getElementById('controlPanel');
-                panel.classList.toggle('collapsed');
+                const panel = document.getElementById('controlPanel')
+                panel.classList.toggle('collapsed')
             }
 
             function clearAllData() {
-                if (!confirm('⚠️ 確定要清除所有資料嗎？\n\n這將會刪除：\n• 所有參加者資料\n• 所有抽獎紀錄\n• Storage 中的照片\n\n此操作無法復原！')) return;
-                if (!confirm('🚨 再次確認：真的要清除所有資料嗎？')) return;
+                if (
+                    !confirm(
+                        '⚠️ 確定要清除所有資料嗎？\n\n這將會刪除：\n• 所有參加者資料\n• 所有抽獎紀錄\n• Storage 中的照片\n\n此操作無法復原！'
+                    )
+                )
+                    return
+                if (!confirm('🚨 再次確認：真的要清除所有資料嗎？')) return
 
-                database.ref('participants').remove();
-                database.ref('gameState').remove();
+                database.ref('participants').remove()
+                database.ref('gameState').remove()
 
-                const storage = firebase.storage();
-                const photosRef = storage.ref('photos');
+                const storage = firebase.storage()
+                const photosRef = storage.ref('photos')
 
-                photosRef.listAll().then((result) => {
-                    const deletePromises = result.items.map((item) => item.delete());
-                    return Promise.all(deletePromises);
-                }).then(() => {
-                    console.log('所有照片已刪除');
-                }).catch((error) => {
-                    console.error('刪除照片時發生錯誤:', error);
-                });
+                photosRef
+                    .listAll()
+                    .then((result) => {
+                        const deletePromises = result.items.map((item) => item.delete())
+                        return Promise.all(deletePromises)
+                    })
+                    .then(() => {
+                        console.log('所有照片已刪除')
+                    })
+                    .catch((error) => {
+                        console.error('刪除照片時發生錯誤:', error)
+                    })
 
                 gameState = {
                     participants: [],
@@ -1192,30 +1259,30 @@
                     drawnIds: [],
                     isRolling: false,
                     isComplete: false,
-                };
+                }
 
-                document.getElementById('completeOverlay').classList.remove('show');
-                document.getElementById('historySection').style.display = 'none';
-                document.getElementById('historyList').innerHTML = '';
-                document.getElementById('lotteryBtn').disabled = true;
-                document.getElementById('lotteryBtn').textContent = '🎰 開始抽獎';
-                document.getElementById('lotteryDisplay').classList.remove('rolling', 'winner');
-                document.getElementById('lotteryAvatar').innerHTML = '<div class="placeholder">🎁</div>';
-                document.getElementById('lotteryName').textContent = '準備抽獎';
-                document.getElementById('lotteryStatus').textContent = '';
-                document.getElementById('firstDrawerSelect').innerHTML = '<option value="">-- 請選擇 --</option>';
+                document.getElementById('completeOverlay').classList.remove('show')
+                document.getElementById('historySection').style.display = 'none'
+                document.getElementById('historyList').innerHTML = ''
+                document.getElementById('lotteryBtn').disabled = true
+                document.getElementById('lotteryBtn').textContent = '🎰 開始抽獎'
+                document.getElementById('lotteryDisplay').classList.remove('rolling', 'winner')
+                document.getElementById('lotteryAvatar').innerHTML = '<div class="placeholder">🎁</div>'
+                document.getElementById('lotteryName').textContent = '準備抽獎'
+                document.getElementById('lotteryStatus').textContent = ''
+                document.getElementById('firstDrawerSelect').innerHTML = '<option value="">-- 請選擇 --</option>'
 
-                updateCurrentDrawer();
-                renderPool([]);
-                updatePoolCount();
+                updateCurrentDrawer()
+                renderPool([])
+                updatePoolCount()
 
-                alert('✅ 所有資料已清除完成！');
+                alert('✅ 所有資料已清除完成！')
             }
 
             function resetGame() {
-                if (!confirm('確定要重置遊戲嗎？所有抽獎紀錄將被清除。')) return;
+                if (!confirm('確定要重置遊戲嗎？所有抽獎紀錄將被清除。')) return
 
-                database.ref('gameState').remove();
+                database.ref('gameState').remove()
 
                 gameState = {
                     participants: gameState.participants,
@@ -1226,45 +1293,45 @@
                     drawnIds: [],
                     isRolling: false,
                     isComplete: false,
-                };
+                }
 
-                document.getElementById('completeOverlay').classList.remove('show');
-                document.getElementById('historySection').style.display = 'none';
-                document.getElementById('historyList').innerHTML = '';
-                document.getElementById('lotteryBtn').disabled = true;
-                document.getElementById('lotteryBtn').textContent = '🎰 開始抽獎';
-                document.getElementById('lotteryDisplay').classList.remove('rolling', 'winner');
-                document.getElementById('lotteryAvatar').innerHTML = '<div class="placeholder">🎁</div>';
-                document.getElementById('lotteryName').textContent = '準備抽獎';
-                document.getElementById('lotteryStatus').textContent = '';
+                document.getElementById('completeOverlay').classList.remove('show')
+                document.getElementById('historySection').style.display = 'none'
+                document.getElementById('historyList').innerHTML = ''
+                document.getElementById('lotteryBtn').disabled = true
+                document.getElementById('lotteryBtn').textContent = '🎰 開始抽獎'
+                document.getElementById('lotteryDisplay').classList.remove('rolling', 'winner')
+                document.getElementById('lotteryAvatar').innerHTML = '<div class="placeholder">🎁</div>'
+                document.getElementById('lotteryName').textContent = '準備抽獎'
+                document.getElementById('lotteryStatus').textContent = ''
 
-                updateCurrentDrawer();
-                renderPool([]);
-                updatePoolCount();
+                updateCurrentDrawer()
+                renderPool([])
+                updatePoolCount()
             }
 
             function createSnowflakes() {
-                const container = document.getElementById('snowflakes');
-                const snowflakeChars = ['❄', '❅', '❆', '✻', '✼'];
+                const container = document.getElementById('snowflakes')
+                const snowflakeChars = ['❄', '❅', '❆', '✻', '✼']
 
                 for (let i = 0; i < 50; i++) {
-                    const snowflake = document.createElement('div');
-                    snowflake.className = 'snowflake';
-                    snowflake.innerHTML = snowflakeChars[Math.floor(Math.random() * snowflakeChars.length)];
-                    snowflake.style.left = Math.random() * 100 + '%';
-                    snowflake.style.animationDuration = Math.random() * 10 + 10 + 's';
-                    snowflake.style.animationDelay = -(Math.random() * 20) + 's';
-                    snowflake.style.fontSize = Math.random() * 1.5 + 0.5 + 'em';
-                    container.appendChild(snowflake);
+                    const snowflake = document.createElement('div')
+                    snowflake.className = 'snowflake'
+                    snowflake.innerHTML = snowflakeChars[Math.floor(Math.random() * snowflakeChars.length)]
+                    snowflake.style.left = Math.random() * 100 + '%'
+                    snowflake.style.animationDuration = Math.random() * 10 + 10 + 's'
+                    snowflake.style.animationDelay = -(Math.random() * 20) + 's'
+                    snowflake.style.fontSize = Math.random() * 1.5 + 0.5 + 'em'
+                    container.appendChild(snowflake)
                 }
             }
 
-            document.getElementById('lotteryBtn').addEventListener('click', startLottery);
+            document.getElementById('lotteryBtn').addEventListener('click', startLottery)
 
             if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', init);
+                document.addEventListener('DOMContentLoaded', init)
             } else {
-                init();
+                init()
             }
         </script>
     </body>
